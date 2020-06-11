@@ -14,8 +14,9 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
-		AD7041402492C8FF0030F46C /* MyWebview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70413E2492C8FF0030F46C /* MyWebview.swift */; };
-		AD7041412492C8FF0030F46C /* WebViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD70413F2492C8FF0030F46C /* WebViewFactory.swift */; };
+		AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD263E8A2492D2F500628BDE /* LicenseKey.swift */; };
+		AD6C0AE52492D672004B17C6 /* MyWebview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE42492D672004B17C6 /* MyWebview.swift */; };
+		AD6C0AE72492D6AB004B17C6 /* WebviewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE62492D6AB004B17C6 /* WebviewFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,8 +50,9 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACF1CBF8F42BE52E8A70288D /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
-		AD70413E2492C8FF0030F46C /* MyWebview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MyWebview.swift; path = ../../../back/flutter_sci_chart_project/ios/Runner/MyWebview.swift; sourceTree = "<group>"; };
-		AD70413F2492C8FF0030F46C /* WebViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebViewFactory.swift; path = ../../../back/flutter_sci_chart_project/ios/Runner/WebViewFactory.swift; sourceTree = "<group>"; };
+		AD263E8A2492D2F500628BDE /* LicenseKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseKey.swift; sourceTree = "<group>"; };
+		AD6C0AE42492D672004B17C6 /* MyWebview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebview.swift; sourceTree = "<group>"; };
+		AD6C0AE62492D6AB004B17C6 /* WebviewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebviewFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,8 +118,6 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				AD70413E2492C8FF0030F46C /* MyWebview.swift */,
-				AD70413F2492C8FF0030F46C /* WebViewFactory.swift */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -127,6 +127,9 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				AD263E8A2492D2F500628BDE /* LicenseKey.swift */,
+				AD6C0AE42492D672004B17C6 /* MyWebview.swift */,
+				AD6C0AE62492D6AB004B17C6 /* WebviewFactory.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -285,9 +288,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD7041412492C8FF0030F46C /* WebViewFactory.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
-				AD7041402492C8FF0030F46C /* MyWebview.swift in Sources */,
+				AD6C0AE52492D672004B17C6 /* MyWebview.swift in Sources */,
+				AD6C0AE72492D6AB004B17C6 /* WebviewFactory.swift in Sources */,
+				AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
