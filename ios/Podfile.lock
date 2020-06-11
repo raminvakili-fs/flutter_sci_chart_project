@@ -1,0 +1,21 @@
+PODS:
+  - RxSwift (5.1.1)
+  - SciChart (3.1.0-nightly.5235)
+
+DEPENDENCIES:
+  - RxSwift
+  - SciChart (= 3.1.0-nightly.5235)
+
+SPEC REPOS:
+  https://github.com/ABTSoftware/PodSpecs3.x.git:
+    - SciChart
+  trunk:
+    - RxSwift
+
+SPEC CHECKSUMS:
+  RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
+  SciChart: 3c71b2ec78a9e59e0957a3448594c9b0c749a85b
+
+PODFILE CHECKSUM: c6ae1b51df997c5f469b81269304681b78097d50
+
+COCOAPODS: 1.9.3
