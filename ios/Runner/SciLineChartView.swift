@@ -42,6 +42,33 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         
         super.init()
         
+        self.surface.xAxes.add(items: SCINumericAxis())
+        self.surface.yAxes.add(items: SCINumericAxis())
+        
+        let lineDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
+        let scatterDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
+        for i in 0 ..< 200 {
+            lineDataSeries.append(x: i, y: sin(Double(i) * 0.1))
+            scatterDataSeries.append(x: i, y: cos(Double(i) * 0.1))
+        }
+        
+        let lineSeries = SCIFastLineRenderableSeries()
+        lineSeries.dataSeries = lineDataSeries
+
+        let pointMarker = SCIEllipsePointMarker()
+        pointMarker.fillStyle = SCISolidBrushStyle(colorCode: 0xFF32CD32)
+        pointMarker.size = CGSize(width: 10, height: 10)
+
+        let scatterSeries = SCIXyScatterRenderableSeries()
+        scatterSeries.dataSeries = scatterDataSeries
+        scatterSeries.pointMarker = pointMarker
+        
+        SCIUpdateSuspender.usingWith(self.surface) {
+//            self.surface.xAxes.add(items: SCINumericAxis())
+//            self.surface.yAxes.add(items: SCINumericAxis())
+            self.surface.renderableSeries.add(items: lineSeries, scatterSeries)
+        }
+        
         
         channel.setMethodCallHandler({
             (call: FlutterMethodCall, result: FlutterResult) -> Void in
@@ -54,8 +81,7 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
     
     
     public func view() -> UIView {
-        self.surface.xAxes.add(items: SCINumericAxis())
-        self.surface.yAxes.add(items: SCINumericAxis())
+        
         return self.surface
     }
 }
