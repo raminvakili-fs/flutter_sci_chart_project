@@ -42,9 +42,11 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         
         super.init()
         
+        // Adding Axes to the surface
         self.surface.xAxes.add(items: SCINumericAxis())
         self.surface.yAxes.add(items: SCINumericAxis())
         
+        // Creating data series and filling them with mock values
         let lineDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
         let scatterDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
         for i in 0 ..< 200 {
@@ -52,6 +54,7 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
             scatterDataSeries.append(x: i, y: cos(Double(i) * 0.1))
         }
         
+        // Creating renderable series and give them data series
         let lineSeries = SCIFastLineRenderableSeries()
         lineSeries.dataSeries = lineDataSeries
 
@@ -62,6 +65,9 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         let scatterSeries = SCIXyScatterRenderableSeries()
         scatterSeries.dataSeries = scatterDataSeries
         scatterSeries.pointMarker = pointMarker
+        
+        // Adding chart modifiers to surface
+        self.surface.chartModifiers.add(items: SCIPinchZoomModifier(), SCIZoomPanModifier(), SCIZoomExtentsModifier())
         
         SCIUpdateSuspender.usingWith(self.surface) {
 //            self.surface.xAxes.add(items: SCINumericAxis())
