@@ -48,31 +48,20 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         
         // Creating data series and filling them with mock values
         let lineDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
-        let scatterDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
-        for i in 0 ..< 200 {
-            lineDataSeries.append(x: i, y: sin(Double(i) * 0.1))
-            scatterDataSeries.append(x: i, y: cos(Double(i) * 0.1))
+        
+        for i in 0 ..< 20 {
+            lineDataSeries.append(x: i, y: Double.random(in: 1...100))
         }
         
         // Creating renderable series and give them data series
         let lineSeries = SCIFastLineRenderableSeries()
         lineSeries.dataSeries = lineDataSeries
-
-        let pointMarker = SCIEllipsePointMarker()
-        pointMarker.fillStyle = SCISolidBrushStyle(colorCode: 0xFF32CD32)
-        pointMarker.size = CGSize(width: 10, height: 10)
-
-        let scatterSeries = SCIXyScatterRenderableSeries()
-        scatterSeries.dataSeries = scatterDataSeries
-        scatterSeries.pointMarker = pointMarker
         
         // Adding chart modifiers to surface
         self.surface.chartModifiers.add(items: SCIPinchZoomModifier(), SCIZoomPanModifier(), SCIZoomExtentsModifier())
         
         SCIUpdateSuspender.usingWith(self.surface) {
-//            self.surface.xAxes.add(items: SCINumericAxis())
-//            self.surface.yAxes.add(items: SCINumericAxis())
-            self.surface.renderableSeries.add(items: lineSeries, scatterSeries)
+            self.surface.renderableSeries.add(items: lineSeries)
         }
         
         
@@ -87,7 +76,6 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
     
     
     public func view() -> UIView {
-        
         return self.surface
     }
 }
