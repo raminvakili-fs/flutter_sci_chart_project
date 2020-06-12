@@ -10,12 +10,9 @@ import Flutter
     GeneratedPluginRegistrant.register(with: self)
     
     let controller = window?.rootViewController as! FlutterViewController
-    let webviewFactory = WebviewFactory(controller: controller)
-    
-   
-    
+    let webviewFactory = SciLineChartFactory(controller: controller)
 
-    registrar(forPlugin: "webview").register(webviewFactory, withId: "webview")
+    registrar(forPlugin: "SciLineChart").register(webviewFactory, withId: "SciLineChart")
 
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

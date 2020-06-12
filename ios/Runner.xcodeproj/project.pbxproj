@@ -15,8 +15,8 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD263E8A2492D2F500628BDE /* LicenseKey.swift */; };
-		AD6C0AE52492D672004B17C6 /* MyWebview.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE42492D672004B17C6 /* MyWebview.swift */; };
-		AD6C0AE72492D6AB004B17C6 /* WebviewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE62492D6AB004B17C6 /* WebviewFactory.swift */; };
+		AD6C0AE52492D672004B17C6 /* SciLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */; };
+		AD6C0AE72492D6AB004B17C6 /* SciLineChartFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,8 +51,8 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACF1CBF8F42BE52E8A70288D /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		AD263E8A2492D2F500628BDE /* LicenseKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseKey.swift; sourceTree = "<group>"; };
-		AD6C0AE42492D672004B17C6 /* MyWebview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyWebview.swift; sourceTree = "<group>"; };
-		AD6C0AE62492D6AB004B17C6 /* WebviewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebviewFactory.swift; sourceTree = "<group>"; };
+		AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciLineChartView.swift; sourceTree = "<group>"; };
+		AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciLineChartFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,8 +128,8 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				AD263E8A2492D2F500628BDE /* LicenseKey.swift */,
-				AD6C0AE42492D672004B17C6 /* MyWebview.swift */,
-				AD6C0AE62492D6AB004B17C6 /* WebviewFactory.swift */,
+				AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */,
+				AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -289,8 +289,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
-				AD6C0AE52492D672004B17C6 /* MyWebview.swift in Sources */,
-				AD6C0AE72492D6AB004B17C6 /* WebviewFactory.swift in Sources */,
+				AD6C0AE52492D672004B17C6 /* SciLineChartView.swift in Sources */,
+				AD6C0AE72492D6AB004B17C6 /* SciLineChartFactory.swift in Sources */,
 				AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);

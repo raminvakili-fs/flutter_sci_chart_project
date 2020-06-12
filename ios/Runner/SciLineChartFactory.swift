@@ -1,6 +1,6 @@
 import Foundation
 
-public class WebviewFactory : NSObject, FlutterPlatformViewFactory {
+public class SciLineChartFactory : NSObject, FlutterPlatformViewFactory {
     let controller: FlutterViewController
     
     init(controller: FlutterViewController) {
@@ -16,6 +16,6 @@ public class WebviewFactory : NSObject, FlutterPlatformViewFactory {
             name: "webview" + String(viewId),
             binaryMessenger: controller.binaryMessenger
         )
-        return MyWebview(frame, viewId: viewId, channel: channel, args: args)
+        return SciLineChartView(frame, viewId: viewId, channel: channel, args: args)
     }
 }
