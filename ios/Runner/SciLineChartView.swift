@@ -43,6 +43,27 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         self.value = Bool.random() ? self.value + Double.random(in: 0...4) : self.value - Double.random(in: 0...4)
     }
     
+    private func addLineAnnotation() -> Void {
+        let horizontalLine = SCIHorizontalLineAnnotation()
+
+        // Allow to interact with the annotation in run-time
+        horizontalLine.isEditable = true
+
+        // In a multi-axis scenario, specify the XAxisId and YAxisId
+        horizontalLine.xAxisId = "TopAxisId"
+        horizontalLine.yAxisId = "RightAxisId"
+
+        // Specify a desired position by setting coordinates
+        horizontalLine.coordinateMode = .absolute
+        horizontalLine.set(y1: 50.0)
+
+        // Specify the stroke color for the annotation
+        horizontalLine.stroke = SCISolidPenStyle(colorCode: 0xFFFCFCFC, thickness: 4)
+
+        // Add the annotation to the Annotations collection of the surface
+        self.surface.annotations.add(horizontalLine)
+    }
+    
     init(_ frame: CGRect, viewId: Int64, channel: FlutterMethodChannel, args: Any?) {
         self.frame = frame
         self.viewId = viewId
@@ -82,6 +103,7 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         
         SCIUpdateSuspender.usingWith(self.surface) {
             self.surface.renderableSeries.add(items: lineSeries)
+            self.addLineAnnotation()
         }
         
         
