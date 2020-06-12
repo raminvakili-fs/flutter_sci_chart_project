@@ -13,28 +13,41 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
     
     var surface: SCIChartSurface
     
-    private let pointsCount = 200
+    private let initialPoints = 50
+    
+    private var value : Double = 50
     private var timer: Timer!
 
-    private let lineData = SCIDoubleValues()
+    private let lineValues = SCIDoubleValues()
     private lazy var lineDataSeries: SCIXyDataSeries = {
         let lineDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
         lineDataSeries.seriesName = "Line Series"
         return lineDataSeries
     }()
-    private let scatterData = SCIDoubleValues()
-    private lazy var scatterDataSeries: SCIXyDataSeries = {
-        let scatterDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
-        scatterDataSeries.seriesName = "Scatter Series"
-        return scatterDataSeries
-    }()
     
+    private let xAxis = SCINumericAxis()
+    
+    
+    @objc fileprivate func updateData(_ timer: Timer) {
+        let x = lineDataSeries.count
+        SCIUpdateSuspender.usingWith(surface) {
+            self.updateValue()
+            self.lineDataSeries.append(x: x, y: self.value)
+
+            // zoom series to fit viewport size into X-Axis direction
+            self.surface.animateZoomExtents(withDuration: 0.5)
+        }
+    }
+    
+    private func updateValue() -> Void {
+        self.value = Bool.random() ? self.value + Double.random(in: 0...4) : self.value - Double.random(in: 0...4)
+    }
     
     init(_ frame: CGRect, viewId: Int64, channel: FlutterMethodChannel, args: Any?) {
         self.frame = frame
         self.viewId = viewId
         self.channel = channel
-        
+    
         
         SCIChartSurface.setRuntimeLicenseKey(licenseKey)
 
@@ -42,16 +55,23 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         
         super.init()
         
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateData), userInfo: nil, repeats: true)
+        
         // Adding Axes to the surface
-        self.surface.xAxes.add(items: SCINumericAxis())
+        // xAxis.visibleRange = SCIIntegerRange(min: 0, max: Int32(initialPoints))
+        
+        self.surface.xAxes.add(items: xAxis)
         self.surface.yAxes.add(items: SCINumericAxis())
         
-        // Creating data series and filling them with mock values
-        let lineDataSeries = SCIXyDataSeries(xType: .int, yType: .double)
-        
-        for i in 0 ..< 20 {
-            lineDataSeries.append(x: i, y: Double.random(in: 1...100))
+        // Using [SCIValues] for better performance according to SciChart documentation
+        let xValues = SCIIntegerValues()
+        for i in 0 ..< initialPoints {
+            xValues.add(Int32(i))
+            self.updateValue()
+            lineValues.add(self.value)
         }
+        lineDataSeries.append(x: xValues, y: lineValues)
+        
         
         // Creating renderable series and give them data series
         let lineSeries = SCIFastLineRenderableSeries()
