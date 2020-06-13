@@ -4,7 +4,7 @@ import WebKit
 import SciChart
 
 
-let DefaultPointCount = 60
+let DefaultPointCount = 20
 let SmaSeriesColor: uint = 0xFFFFA500
 let StrokeUpColor: uint = 0xFF00AA00
 let StrokeDownColor: uint = 0xFFFF0000
@@ -21,7 +21,7 @@ class RealtimeTickingStockChartView {
     let _ohlcAxisMarker = SCIAxisMarkerAnnotation()
     
     let _marketDataService = SCDMarketDataService(start: NSDate(year: 2000, month: 8, day: 01, hour: 12, minute: 0, second: 0) as Date, timeFrameMinutes: 5, tickTimerIntervals: 1)
-    let _sma50 = SCDMovingAverage(length: 50)
+    let _sma50 = SCDMovingAverage(length: 5)
     var _lastPrice: SCDPriceBar?
     
     var onNewPriceBlock : PriceUpdateCallback!
@@ -52,6 +52,7 @@ class RealtimeTickingStockChartView {
         
         let axis = mainSurface.xAxes[0]
         axis.visibleRangeChangeListener = { (axis, oldRange, newRange, isAnimating) in
+            print("isAnimating \(isAnimating)")
             leftAreaAnnotation.set(x1: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
             leftAreaAnnotation.set(x2: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
             rightAreaAnnotation.set(x1: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
