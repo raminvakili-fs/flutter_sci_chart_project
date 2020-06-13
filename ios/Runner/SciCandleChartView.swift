@@ -31,10 +31,10 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
         
         channel.setMethodCallHandler({
             (call: FlutterMethodCall, result: FlutterResult) -> Void in
-            if (call.method == "loadUrl") {
+            if (call.method == "changeChartType") {
                 // let url = call.arguments as! String
                 // Do something!
-                print("LoadUrl in Line Chart")
+                print("changeChartType in Candle Chart")
                 self.stockChartView.changeSeriesType(call.arguments as! String)
             }
         })

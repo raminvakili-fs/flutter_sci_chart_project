@@ -52,7 +52,7 @@ class CandleChartController {
 
   MethodChannel _channel;
 
-  Future<void> loadUrl(String url) async {
-    return _channel.invokeMethod('loadUrl', url);
+  Future<void> changeChartType(String type) async {
+    return _channel.invokeMethod('changeChartType', type);
   }
 }

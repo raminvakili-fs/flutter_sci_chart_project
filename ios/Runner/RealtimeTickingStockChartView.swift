@@ -4,7 +4,7 @@ import WebKit
 import SciChart
 
 
-let DefaultPointCount = 150
+let DefaultPointCount = 60
 let SmaSeriesColor: uint = 0xFFFFA500
 let StrokeUpColor: uint = 0xFF00AA00
 let StrokeDownColor: uint = 0xFFFF0000
@@ -20,7 +20,7 @@ class RealtimeTickingStockChartView {
     let _smaAxisMarker = SCIAxisMarkerAnnotation()
     let _ohlcAxisMarker = SCIAxisMarkerAnnotation()
     
-    let _marketDataService = SCDMarketDataService(start: NSDate(year: 2000, month: 8, day: 01, hour: 12, minute: 0, second: 0) as Date, timeFrameMinutes: 5, tickTimerIntervals: 0.02)
+    let _marketDataService = SCDMarketDataService(start: NSDate(year: 2000, month: 8, day: 01, hour: 12, minute: 0, second: 0) as Date, timeFrameMinutes: 5, tickTimerIntervals: 1)
     let _sma50 = SCDMovingAverage(length: 50)
     var _lastPrice: SCDPriceBar?
     
