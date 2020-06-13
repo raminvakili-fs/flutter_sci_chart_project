@@ -12,8 +12,6 @@ import com.example.flutterscichartproject.data.PriceBar;
 import com.example.flutterscichartproject.data.PriceSeries;
 import com.scichart.charting.ClipMode;
 import com.scichart.charting.Direction2D;
-import com.scichart.charting.model.dataSeries.DataSeriesUpdate;
-import com.scichart.charting.model.dataSeries.IDataSeries;
 import com.scichart.charting.model.dataSeries.IDataSeriesCore;
 import com.scichart.charting.model.dataSeries.IDataSeriesObserver;
 import com.scichart.charting.model.dataSeries.IOhlcDataSeries;
@@ -30,6 +28,7 @@ import com.scichart.charting.visuals.axes.IAxis;
 import com.scichart.charting.visuals.axes.IAxisCore;
 import com.scichart.charting.visuals.axes.NumericAxis;
 import com.scichart.charting.visuals.axes.VisibleRangeChangeListener;
+import com.scichart.charting.visuals.renderableSeries.BaseRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastLineRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastMountainRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.OhlcRenderableSeriesBase;
@@ -49,11 +48,11 @@ public class RealTimeOhlcChart {
 
     private final SciChartBuilder sciChartBuilder;
     private static final int SECONDS_IN_FIVE_MINUTES = 5 * 60;
-    private static final int DEFAULT_POINT_COUNT = 150;
+    private static final int DEFAULT_POINT_COUNT = 30;
     private static final int SMA_SERIES_COLOR = 0xFFFFA500;
     private static final int STOKE_UP_COLOR = 0xFF00AA00;
-    public static final int STROKE_DOWN_COLOR = 0xFFFF0000;
-    public static final float STROKE_THICKNESS = 1.5f;
+    private static final int STROKE_DOWN_COLOR = 0xFFFF0000;
+    private static final float STROKE_THICKNESS = 1.5f;
 
     private IOhlcDataSeries<Date, Double> ohlcDataSeries;
     private IXyDataSeries<Date, Double> xyDataSeries;
@@ -277,9 +276,43 @@ public class RealTimeOhlcChart {
     }
 
     public void changeChartType(String type) {
+        switch (type) {
+            case "candle":
+                changeSeries(sciChartBuilder.newCandlestickSeries()
+                        .withStrokeUp(0xFF00AA00)
+                        .withFillUpColor(0x8800AA00)
+                        .withStrokeDown(0xFFFF0000)
+                        .withFillDownColor(0x88FF0000)
+                        .withDataSeries(ohlcDataSeries)
+                        .build());
+            case "ohlc":
+                changeSeries(sciChartBuilder.newOhlcSeries()
+                        .withStrokeUp(STOKE_UP_COLOR, STROKE_THICKNESS)
+                        .withStrokeDown(STROKE_DOWN_COLOR, STROKE_THICKNESS)
+                        .withStrokeStyle(STOKE_UP_COLOR)
+                        .withDataSeries(ohlcDataSeries)
+                        .build());
+//            default:
+//                changeSeries(sciChartBuilder.newMountainSeries()
+//                        .withAreaFillColor(0x33FFF9)
+//                        .withOpacity(0.5f)
+//                        .withDataSeries(ohlcDataSeries)
+//                        .build());
+        }
 
     }
 
+    private void changeSeries(OhlcRenderableSeriesBase rSeries) {
+        rSeries.setDataSeries(ohlcDataSeries);
+
+        UpdateSuspender.using(surface, new Runnable() {
+            @Override
+            public void run() {
+                surface.getRenderableSeries().remove(0);
+                surface.getRenderableSeries().add(rSeries);
+            }
+        });
+    }
 
     private static class OverviewPrototype {
         private final SciChartBuilder builder = SciChartBuilder.instance();
