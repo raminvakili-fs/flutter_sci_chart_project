@@ -2,33 +2,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-typedef void LineChartCreatedCallback(LineChartController controller);
+typedef void CandleChartCreatedCallback(CandleChartController controller);
 
-const String lineChartKey = 'SciLineChart';
+const String candleChartKey = 'SciCandleChart';
 
-class SciLineChart extends StatefulWidget {
-  const SciLineChart({
+class SciCandleChart extends StatefulWidget {
+  const SciCandleChart({
     Key key,
-    this.onLineChartCreated,
+    this.onChartCreated,
   }) : super(key: key);
 
-  final LineChartCreatedCallback onLineChartCreated;
+  final CandleChartCreatedCallback onChartCreated;
 
   @override
-  State<StatefulWidget> createState() => SciLineChartState();
+  State<StatefulWidget> createState() => SciCandleChartState();
 }
 
-class SciLineChartState extends State<SciLineChart> {
+class SciCandleChartState extends State<SciCandleChart> {
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
-        viewType: lineChartKey,
+        viewType: candleChartKey,
         onPlatformViewCreated: _onPlatformViewCreated,
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
-        viewType: lineChartKey,
+        viewType: candleChartKey,
         onPlatformViewCreated: _onPlatformViewCreated,
       );
     }
@@ -38,16 +38,16 @@ class SciLineChartState extends State<SciLineChart> {
   }
 
   void _onPlatformViewCreated(int id) {
-    if (widget.onLineChartCreated == null) {
+    if (widget.onChartCreated == null) {
       return;
     }
-    widget.onLineChartCreated(new LineChartController(id));
+    widget.onChartCreated(new CandleChartController(id));
   }
 }
 
-class LineChartController {
-  LineChartController(int id) {
-    this._channel = new MethodChannel('$lineChartKey$id');
+class CandleChartController {
+  CandleChartController(int id) {
+    this._channel = new MethodChannel('$candleChartKey$id');
   }
 
   MethodChannel _channel;

@@ -34,6 +34,7 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
             if (call.method == "loadUrl") {
                 // let url = call.arguments as! String
                 // Do something!
+                print("LoadUrl in Line Chart")
                 self.stockChartView.changeSeriesType(call.arguments as! String)
             }
         })

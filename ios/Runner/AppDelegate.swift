@@ -10,10 +10,12 @@ import Flutter
     GeneratedPluginRegistrant.register(with: self)
     
     let controller = window?.rootViewController as! FlutterViewController
+    
     let lineChartFactory = SciLineChartFactory(controller: controller)
-
     registrar(forPlugin: "SciLineChart").register(lineChartFactory, withId: "SciLineChart")
-
+    
+    let candleChartFactory = SciCandleChartFactory(controller: controller)
+    registrar(forPlugin: "SciCandleChart").register(candleChartFactory, withId: "SciCandleChart")
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

@@ -117,6 +117,7 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
             if (call.method == "loadUrl") {
                 // let url = call.arguments as! String
                 // Do something!
+                print("LoadUrl in Line Chart")
             }
         })
     }

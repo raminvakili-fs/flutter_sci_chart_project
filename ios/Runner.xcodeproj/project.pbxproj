@@ -31,6 +31,7 @@
 		ADBC17C124949FB000E6EB87 /* SCDPriceSeries.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B324949FB000E6EB87 /* SCDPriceSeries.m */; };
 		ADBC17C224949FB000E6EB87 /* SCDDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B424949FB000E6EB87 /* SCDDataManager.m */; };
 		ADBC17C324949FB000E6EB87 /* SCDDoubleSeries.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B524949FB000E6EB87 /* SCDDoubleSeries.m */; };
+		ADBC17C52494A5F800E6EB87 /* SciCandleChartFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17C42494A5F800E6EB87 /* SciCandleChartFactory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -93,6 +94,7 @@
 		ADBC17B524949FB000E6EB87 /* SCDDoubleSeries.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDDoubleSeries.m; path = Data/SCDDoubleSeries.m; sourceTree = "<group>"; };
 		ADBC17B624949FB000E6EB87 /* SCDRadix2FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDRadix2FFT.h; path = Data/SCDRadix2FFT.h; sourceTree = "<group>"; };
 		ADBC17B724949FB000E6EB87 /* SCDRandomPricesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDRandomPricesDataSource.h; path = Data/SCDRandomPricesDataSource.h; sourceTree = "<group>"; };
+		ADBC17C42494A5F800E6EB87 /* SciCandleChartFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciCandleChartFactory.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 				ADBC175124949A6C00E6EB87 /* Data */,
 				ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */,
 				ADBC174F2494919A00E6EB87 /* SciCandleChartView.swift */,
+				ADBC17C42494A5F800E6EB87 /* SciCandleChartFactory.swift */,
 			);
 			name = CandleChart;
 			sourceTree = "<group>";
@@ -388,6 +391,7 @@
 				ADBC17BA24949FB000E6EB87 /* SCDRadix2FFT.m in Sources */,
 				AD6C0AE72492D6AB004B17C6 /* SciLineChartFactory.swift in Sources */,
 				ADBC17C324949FB000E6EB87 /* SCDDoubleSeries.m in Sources */,
+				ADBC17C52494A5F800E6EB87 /* SciCandleChartFactory.swift in Sources */,
 				ADBC17BF24949FB000E6EB87 /* SCDMarketDataService.m in Sources */,
 				ADBC174E24948F3600E6EB87 /* RealtimeTickingStockChartView.swift in Sources */,
 				ADBC17502494919A00E6EB87 /* SciCandleChartView.swift in Sources */,

@@ -1,6 +1,6 @@
 import Foundation
 
-public class SciLineChartFactory : NSObject, FlutterPlatformViewFactory {
+public class SciCandleChartFactory : NSObject, FlutterPlatformViewFactory {
     let controller: FlutterViewController
     
     init(controller: FlutterViewController) {
@@ -13,9 +13,9 @@ public class SciLineChartFactory : NSObject, FlutterPlatformViewFactory {
         arguments args: Any?
     ) -> FlutterPlatformView {
         let channel = FlutterMethodChannel(
-            name: "SciLineChart" + String(viewId),
+            name: "SciCandleChart" + String(viewId),
             binaryMessenger: controller.binaryMessenger
         )
-        return SciLineChartView(frame, viewId: viewId, channel: channel, args: args)
+        return SciCandleChartView(frame, viewId: viewId, channel: channel, args: args)
     }
 }
