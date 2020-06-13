@@ -32,6 +32,7 @@ import com.scichart.charting.visuals.renderableSeries.BaseRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastLineRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastMountainRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.OhlcRenderableSeriesBase;
+import com.scichart.core.annotations.Orientation;
 import com.scichart.core.common.Action1;
 import com.scichart.core.framework.UpdateSuspender;
 import com.scichart.data.model.DoubleRange;
@@ -212,18 +213,12 @@ public class RealTimeOhlcChart {
                         .withXAxisDragModifier().build()
                         .withZoomPanModifier().withReceiveHandledEvents(true).withXyDirection(Direction2D.XDirection).build()
                         .withZoomExtentsModifier().build()
-
                         .withPinchZoomModifier().build()
-
                         .withZoomPanModifier().withReceiveHandledEvents(true).build()
-
                         .withZoomExtentsModifier().withReceiveHandledEvents(true).build()
-
                         .withXAxisDragModifier().withReceiveHandledEvents(true).withDragMode(AxisDragModifierBase.AxisDragMode.Scale).withClipModeX(ClipMode.None).build()
-
                         .withYAxisDragModifier().withReceiveHandledEvents(true).withDragMode(AxisDragModifierBase.AxisDragMode.Pan).build()
-
-                        //.withLegendModifier().withOrientation(Orientation.HORIZONTAL).withPosition(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 20).withReceiveHandledEvents(true).build()
+                        .withLegendModifier().withOrientation(Orientation.HORIZONTAL).withPosition(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 20).withReceiveHandledEvents(true).build()
                         .build());
             }
         });
