@@ -17,6 +17,20 @@
 		AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD263E8A2492D2F500628BDE /* LicenseKey.swift */; };
 		AD6C0AE52492D672004B17C6 /* SciLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */; };
 		AD6C0AE72492D6AB004B17C6 /* SciLineChartFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */; };
+		ADBC174E24948F3600E6EB87 /* RealtimeTickingStockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */; };
+		ADBC17502494919A00E6EB87 /* SciCandleChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBC174F2494919A00E6EB87 /* SciCandleChartView.swift */; };
+		ADBC17B824949FB000E6EB87 /* SCDMovingAverage.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17A124949FAF00E6EB87 /* SCDMovingAverage.m */; };
+		ADBC17B924949FB000E6EB87 /* SCDMacdPoints.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17A324949FB000E6EB87 /* SCDMacdPoints.m */; };
+		ADBC17BA24949FB000E6EB87 /* SCDRadix2FFT.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17A424949FB000E6EB87 /* SCDRadix2FFT.m */; };
+		ADBC17BB24949FB000E6EB87 /* SCDPriceBar.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17A524949FB000E6EB87 /* SCDPriceBar.m */; };
+		ADBC17BC24949FB000E6EB87 /* SCDRandomUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17A724949FB000E6EB87 /* SCDRandomUtil.m */; };
+		ADBC17BD24949FB000E6EB87 /* SCDRandomWalkGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17AA24949FB000E6EB87 /* SCDRandomWalkGenerator.m */; };
+		ADBC17BE24949FB000E6EB87 /* SCDTradeData.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17AD24949FB000E6EB87 /* SCDTradeData.m */; };
+		ADBC17BF24949FB000E6EB87 /* SCDMarketDataService.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17AF24949FB000E6EB87 /* SCDMarketDataService.m */; };
+		ADBC17C024949FB000E6EB87 /* SCDRandomPricesDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B124949FB000E6EB87 /* SCDRandomPricesDataSource.m */; };
+		ADBC17C124949FB000E6EB87 /* SCDPriceSeries.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B324949FB000E6EB87 /* SCDPriceSeries.m */; };
+		ADBC17C224949FB000E6EB87 /* SCDDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B424949FB000E6EB87 /* SCDDataManager.m */; };
+		ADBC17C324949FB000E6EB87 /* SCDDoubleSeries.m in Sources */ = {isa = PBXBuildFile; fileRef = ADBC17B524949FB000E6EB87 /* SCDDoubleSeries.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,6 +67,32 @@
 		AD263E8A2492D2F500628BDE /* LicenseKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseKey.swift; sourceTree = "<group>"; };
 		AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciLineChartView.swift; sourceTree = "<group>"; };
 		AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciLineChartFactory.swift; sourceTree = "<group>"; };
+		ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeTickingStockChartView.swift; sourceTree = "<group>"; };
+		ADBC174F2494919A00E6EB87 /* SciCandleChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciCandleChartView.swift; sourceTree = "<group>"; };
+		ADBC17A024949FAF00E6EB87 /* SCDDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDDataManager.h; path = Data/SCDDataManager.h; sourceTree = "<group>"; };
+		ADBC17A124949FAF00E6EB87 /* SCDMovingAverage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDMovingAverage.m; path = Data/SCDMovingAverage.m; sourceTree = "<group>"; };
+		ADBC17A224949FB000E6EB87 /* SCDMarketDataService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDMarketDataService.h; path = Data/SCDMarketDataService.h; sourceTree = "<group>"; };
+		ADBC17A324949FB000E6EB87 /* SCDMacdPoints.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDMacdPoints.m; path = Data/SCDMacdPoints.m; sourceTree = "<group>"; };
+		ADBC17A424949FB000E6EB87 /* SCDRadix2FFT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDRadix2FFT.m; path = Data/SCDRadix2FFT.m; sourceTree = "<group>"; };
+		ADBC17A524949FB000E6EB87 /* SCDPriceBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDPriceBar.m; path = Data/SCDPriceBar.m; sourceTree = "<group>"; };
+		ADBC17A624949FB000E6EB87 /* SCDMacdPoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDMacdPoints.h; path = Data/SCDMacdPoints.h; sourceTree = "<group>"; };
+		ADBC17A724949FB000E6EB87 /* SCDRandomUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDRandomUtil.m; path = Data/SCDRandomUtil.m; sourceTree = "<group>"; };
+		ADBC17A824949FB000E6EB87 /* SCDRandomWalkGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDRandomWalkGenerator.h; path = Data/SCDRandomWalkGenerator.h; sourceTree = "<group>"; };
+		ADBC17A924949FB000E6EB87 /* SCDMovingAverage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDMovingAverage.h; path = Data/SCDMovingAverage.h; sourceTree = "<group>"; };
+		ADBC17AA24949FB000E6EB87 /* SCDRandomWalkGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDRandomWalkGenerator.m; path = Data/SCDRandomWalkGenerator.m; sourceTree = "<group>"; };
+		ADBC17AB24949FB000E6EB87 /* SCDTradeData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDTradeData.h; path = Data/SCDTradeData.h; sourceTree = "<group>"; };
+		ADBC17AC24949FB000E6EB87 /* SCDPriceBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDPriceBar.h; path = Data/SCDPriceBar.h; sourceTree = "<group>"; };
+		ADBC17AD24949FB000E6EB87 /* SCDTradeData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDTradeData.m; path = Data/SCDTradeData.m; sourceTree = "<group>"; };
+		ADBC17AE24949FB000E6EB87 /* SCDDoubleSeries.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDDoubleSeries.h; path = Data/SCDDoubleSeries.h; sourceTree = "<group>"; };
+		ADBC17AF24949FB000E6EB87 /* SCDMarketDataService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDMarketDataService.m; path = Data/SCDMarketDataService.m; sourceTree = "<group>"; };
+		ADBC17B024949FB000E6EB87 /* SCDPriceSeries.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDPriceSeries.h; path = Data/SCDPriceSeries.h; sourceTree = "<group>"; };
+		ADBC17B124949FB000E6EB87 /* SCDRandomPricesDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDRandomPricesDataSource.m; path = Data/SCDRandomPricesDataSource.m; sourceTree = "<group>"; };
+		ADBC17B224949FB000E6EB87 /* SCDRandomUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDRandomUtil.h; path = Data/SCDRandomUtil.h; sourceTree = "<group>"; };
+		ADBC17B324949FB000E6EB87 /* SCDPriceSeries.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDPriceSeries.m; path = Data/SCDPriceSeries.m; sourceTree = "<group>"; };
+		ADBC17B424949FB000E6EB87 /* SCDDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDDataManager.m; path = Data/SCDDataManager.m; sourceTree = "<group>"; };
+		ADBC17B524949FB000E6EB87 /* SCDDoubleSeries.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SCDDoubleSeries.m; path = Data/SCDDoubleSeries.m; sourceTree = "<group>"; };
+		ADBC17B624949FB000E6EB87 /* SCDRadix2FFT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDRadix2FFT.h; path = Data/SCDRadix2FFT.h; sourceTree = "<group>"; };
+		ADBC17B724949FB000E6EB87 /* SCDRandomPricesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SCDRandomPricesDataSource.h; path = Data/SCDRandomPricesDataSource.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,8 +193,42 @@
 		ADBC174C2494858800E6EB87 /* CandleChart */ = {
 			isa = PBXGroup;
 			children = (
+				ADBC175124949A6C00E6EB87 /* Data */,
+				ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */,
+				ADBC174F2494919A00E6EB87 /* SciCandleChartView.swift */,
 			);
 			name = CandleChart;
+			sourceTree = "<group>";
+		};
+		ADBC175124949A6C00E6EB87 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				ADBC17A024949FAF00E6EB87 /* SCDDataManager.h */,
+				ADBC17B424949FB000E6EB87 /* SCDDataManager.m */,
+				ADBC17AE24949FB000E6EB87 /* SCDDoubleSeries.h */,
+				ADBC17B524949FB000E6EB87 /* SCDDoubleSeries.m */,
+				ADBC17A624949FB000E6EB87 /* SCDMacdPoints.h */,
+				ADBC17A324949FB000E6EB87 /* SCDMacdPoints.m */,
+				ADBC17A224949FB000E6EB87 /* SCDMarketDataService.h */,
+				ADBC17AF24949FB000E6EB87 /* SCDMarketDataService.m */,
+				ADBC17A924949FB000E6EB87 /* SCDMovingAverage.h */,
+				ADBC17A124949FAF00E6EB87 /* SCDMovingAverage.m */,
+				ADBC17AC24949FB000E6EB87 /* SCDPriceBar.h */,
+				ADBC17A524949FB000E6EB87 /* SCDPriceBar.m */,
+				ADBC17B024949FB000E6EB87 /* SCDPriceSeries.h */,
+				ADBC17B324949FB000E6EB87 /* SCDPriceSeries.m */,
+				ADBC17B624949FB000E6EB87 /* SCDRadix2FFT.h */,
+				ADBC17A424949FB000E6EB87 /* SCDRadix2FFT.m */,
+				ADBC17B724949FB000E6EB87 /* SCDRandomPricesDataSource.h */,
+				ADBC17B124949FB000E6EB87 /* SCDRandomPricesDataSource.m */,
+				ADBC17B224949FB000E6EB87 /* SCDRandomUtil.h */,
+				ADBC17A724949FB000E6EB87 /* SCDRandomUtil.m */,
+				ADBC17A824949FB000E6EB87 /* SCDRandomWalkGenerator.h */,
+				ADBC17AA24949FB000E6EB87 /* SCDRandomWalkGenerator.m */,
+				ADBC17AB24949FB000E6EB87 /* SCDTradeData.h */,
+				ADBC17AD24949FB000E6EB87 /* SCDTradeData.m */,
+			);
+			name = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -305,10 +379,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				ADBC17BD24949FB000E6EB87 /* SCDRandomWalkGenerator.m in Sources */,
+				ADBC17C024949FB000E6EB87 /* SCDRandomPricesDataSource.m in Sources */,
+				ADBC17BB24949FB000E6EB87 /* SCDPriceBar.m in Sources */,
 				AD6C0AE52492D672004B17C6 /* SciLineChartView.swift in Sources */,
+				ADBC17BC24949FB000E6EB87 /* SCDRandomUtil.m in Sources */,
+				ADBC17B824949FB000E6EB87 /* SCDMovingAverage.m in Sources */,
+				ADBC17BA24949FB000E6EB87 /* SCDRadix2FFT.m in Sources */,
 				AD6C0AE72492D6AB004B17C6 /* SciLineChartFactory.swift in Sources */,
+				ADBC17C324949FB000E6EB87 /* SCDDoubleSeries.m in Sources */,
+				ADBC17BF24949FB000E6EB87 /* SCDMarketDataService.m in Sources */,
+				ADBC174E24948F3600E6EB87 /* RealtimeTickingStockChartView.swift in Sources */,
+				ADBC17502494919A00E6EB87 /* SciCandleChartView.swift in Sources */,
+				ADBC17C124949FB000E6EB87 /* SCDPriceSeries.m in Sources */,
+				ADBC17B924949FB000E6EB87 /* SCDMacdPoints.m in Sources */,
+				ADBC17C224949FB000E6EB87 /* SCDDataManager.m in Sources */,
 				AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				ADBC17BE24949FB000E6EB87 /* SCDTradeData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
