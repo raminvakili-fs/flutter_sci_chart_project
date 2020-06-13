@@ -33,9 +33,14 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         SCIUpdateSuspender.usingWith(surface) {
             self.updateValue()
             self.lineDataSeries.append(x: x, y: self.value)
+            
+            let visibleRange = self.surface.xAxes[0].visibleRange
+            
+            visibleRange.setDoubleMinTo(visibleRange.minAsDouble + 1, maxTo: visibleRange.maxAsDouble + 1)
+            
 
             // zoom series to fit viewport size into X-Axis direction
-            self.surface.animateZoomExtents(withDuration: 0.5)
+            // self.surface.zoomExtents()
         }
     }
     
