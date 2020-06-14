@@ -1,11 +1,11 @@
-package com.example.flutterscichartproject.sci;
+package com.example.flutterscichartproject.sci.ohlc;
 
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
 
-import com.example.flutterscichartproject.RealTimeOhlcChart;
+import com.example.flutterscichartproject.sci.RealTimeChart;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -18,19 +18,19 @@ import static io.flutter.plugin.common.MethodChannel.Result;
 public class FlutterOHLC implements PlatformView, MethodCallHandler  {
     private final TextView textView;
     private final MethodChannel methodChannel;
-    RealTimeOhlcChart realTimeOhlcChart;
+    RealTimeChart realTimeChart;
 
     FlutterOHLC(Context context, BinaryMessenger messenger, int id) {
         textView = new TextView(context);
         methodChannel = new MethodChannel(messenger, "plugins.com.example/ohlc_" + id);
         methodChannel.setMethodCallHandler(this);
-        realTimeOhlcChart = new RealTimeOhlcChart(context, true);
-        realTimeOhlcChart.startRealTimeChart();
+        realTimeChart = new RealTimeChart(context, true);
+        realTimeChart.startRealTimeChart();
     }
 
     @Override
     public View getView() {
-        return realTimeOhlcChart.getChartLayout();
+        return realTimeChart.getChartLayout();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.flutterscichartproject.sci;
+package com.example.flutterscichartproject.sci.interactingannotation;
 
 import android.content.Context;
 import android.graphics.Typeface;

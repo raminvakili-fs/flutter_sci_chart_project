@@ -2,9 +2,9 @@ package com.example.flutterscichartproject;
 
 import androidx.annotation.NonNull;
 
-import com.example.flutterscichartproject.sci.CandleStickFactory;
-import com.example.flutterscichartproject.sci.InteractingAnnotationFactory;
-import com.example.flutterscichartproject.sci.OHLCFactory;
+import com.example.flutterscichartproject.sci.candle.CandleStickFactory;
+import com.example.flutterscichartproject.sci.interactingannotation.InteractingAnnotationFactory;
+import com.example.flutterscichartproject.sci.ohlc.OHLCFactory;
 import com.scichart.charting.visuals.SciChartSurface;
 
 import io.flutter.Log;

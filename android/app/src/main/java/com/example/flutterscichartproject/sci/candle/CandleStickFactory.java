@@ -1,4 +1,4 @@
-package com.example.flutterscichartproject.sci;
+package com.example.flutterscichartproject.sci.candle;
 
 import android.content.Context;
 
