@@ -2,6 +2,8 @@ package com.example.flutterscichartproject.sci;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.example.flutterscichartproject.data.IMarketDataService;
@@ -9,6 +11,9 @@ import com.example.flutterscichartproject.data.MarketDataService;
 import com.example.flutterscichartproject.data.MovingAverage;
 import com.example.flutterscichartproject.data.PriceBar;
 import com.example.flutterscichartproject.data.PriceSeries;
+import com.example.flutterscichartproject.sci.panelmodel.BasePaneModel;
+import com.example.flutterscichartproject.sci.panelmodel.MacdPaneModel;
+import com.example.flutterscichartproject.sci.panelmodel.RsiPaneModel;
 import com.scichart.charting.ClipMode;
 import com.scichart.charting.Direction2D;
 import com.scichart.charting.model.dataSeries.IOhlcDataSeries;
@@ -24,6 +29,7 @@ import com.scichart.charting.visuals.renderableSeries.OhlcRenderableSeriesBase;
 import com.scichart.core.annotations.Orientation;
 import com.scichart.core.common.Action1;
 import com.scichart.core.framework.UpdateSuspender;
+import com.scichart.data.model.DoubleRange;
 import com.scichart.data.model.IRange;
 import com.scichart.extensions.builders.SciChartBuilder;
 
@@ -55,11 +61,15 @@ public class RealTimeChart {
     private OverviewPrototype overviewPrototype;
 
     private SciChartSurface surface;
+    private SciChartSurface rsiSurface;
+    private SciChartSurface macdSurface;
 
     private SciChartSurface overviewSurface;
     private boolean isOHLC;
-    
+
     private LinearLayout chartLayout;
+
+    private final DoubleRange sharedXRange = new DoubleRange();
 
     public OverviewPrototype getOverviewPrototype() {
         return overviewPrototype;
@@ -86,25 +96,40 @@ public class RealTimeChart {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        params.weight = 0.8f;
+        params.weight = 0.55f;
         surface.setLayoutParams(params);
 
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        params2.weight = 0.2f;
+        params2.weight = 0.15f;
         overviewSurface.setLayoutParams(params2);
+
+        LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0);
+        params3.weight = 0.15f;
+        rsiSurface.setLayoutParams(params3);
+
+        LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0);
+        params4.weight = 0.15f;
+        macdSurface.setLayoutParams(params4);
 
         chartLayout.addView(surface);
         chartLayout.addView(overviewSurface);
+        chartLayout.addView(rsiSurface);
+        chartLayout.addView(macdSurface);
     }
 
-    public LinearLayout getChartLayout() {
+    public ViewGroup getChartLayout() {
         return chartLayout;
     }
 
     private void initFields(Context context) {
         surface = new SciChartSurface(context);
         overviewSurface = new SciChartSurface(context);
+        rsiSurface = new SciChartSurface(context);
+        macdSurface = new SciChartSurface(context);
+
         ohlcDataSeries = sciChartBuilder.newOhlcDataSeries(Date.class, Double.class).withSeriesName("Price Series").build();
         xyDataSeries = sciChartBuilder.newXyDataSeries(Date.class, Double.class).withSeriesName("50-Period SMA").build();
 
@@ -125,8 +150,7 @@ public class RealTimeChart {
         UpdateSuspender.using(surface, new Runnable() {
             @Override
             public void run() {
-                int count = DEFAULT_POINT_COUNT;
-//                if (savedInstanceState != null) {
+                //                if (savedInstanceState != null) {
 //                    count = savedInstanceState.getInt("count");
 //
 //                    double rangeMin = savedInstanceState.getDouble("rangeMin");
@@ -134,7 +158,12 @@ public class RealTimeChart {
 //
 //                    surface.getXAxes().get(0).getVisibleRange().setMinMaxDouble(rangeMin, rangeMax);
 //                }
-                PriceSeries prices = marketDataService.getHistoricalData(count);
+                PriceSeries prices = marketDataService.getHistoricalData(DEFAULT_POINT_COUNT);
+
+                final RsiPaneModel rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
+                final MacdPaneModel macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
+                initChart(rsiSurface, rsiPaneModel, false);
+                initChart(macdSurface, macdPaneModel, false);
 
                 ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
                 xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
@@ -161,6 +190,7 @@ public class RealTimeChart {
     private void initializeMainChart(final SciChartSurface surface) {
         final CategoryDateAxis xAxis = sciChartBuilder.newCategoryDateAxis()
                 .withBarTimeFrame(SECONDS_IN_FIVE_MINUTES)
+                .withVisibleRange(sharedXRange)
                 .withDrawMinorGridLines(false)
                 .withGrowBy(0, 0.1)
                 .build();
@@ -294,6 +324,32 @@ public class RealTimeChart {
                 surface.getRenderableSeries().add(rSeries);
             }
         });
+    }
+
+    private void initChart(SciChartSurface surface, BasePaneModel model, boolean isMainPane) {
+        final CategoryDateAxis xAxis = sciChartBuilder.newCategoryDateAxis()
+                .withVisibility(isMainPane ? View.VISIBLE : View.GONE)
+                .withVisibleRange(sharedXRange)
+                .withGrowBy(0, 0.05)
+                .build();
+
+        surface.getXAxes().add(xAxis);
+        surface.getYAxes().add(model.yAxis);
+
+        surface.getRenderableSeries().addAll(model.renderableSeries);
+
+        surface.getChartModifiers().add(sciChartBuilder
+                .newModifierGroup()
+                .withXAxisDragModifier().withReceiveHandledEvents(true).withDragMode(AxisDragModifierBase.AxisDragMode.Pan).withClipModeX(ClipMode.StretchAtExtents).build()
+                .withPinchZoomModifier().withReceiveHandledEvents(true).withXyDirection(Direction2D.XDirection).build()
+                .withZoomPanModifier().withReceiveHandledEvents(true).build()
+                .withZoomExtentsModifier().withReceiveHandledEvents(true).build()
+                .withLegendModifier().withShowCheckBoxes(false).build()
+                .build());
+
+        surface.setAnnotations(model.annotations);
+
+        //verticalGroup.addSurfaceToGroup(surface);
     }
 
 }
