@@ -42,7 +42,7 @@ public class RealTimeChart {
 
     private final SciChartBuilder sciChartBuilder;
     static final int SECONDS_IN_FIVE_MINUTES = 5 * 60;
-    private static final int DEFAULT_POINT_COUNT = 30;
+    private static final int DEFAULT_POINT_COUNT = 50;
     private static final int SMA_SERIES_COLOR = 0xFFFFA500;
     private static final int STOKE_UP_COLOR = 0xFF00AA00;
     private static final int STROKE_DOWN_COLOR = 0xFFFF0000;
@@ -348,8 +348,6 @@ public class RealTimeChart {
                 .build());
 
         surface.setAnnotations(model.annotations);
-
-        //verticalGroup.addSurfaceToGroup(surface);
     }
 
 }

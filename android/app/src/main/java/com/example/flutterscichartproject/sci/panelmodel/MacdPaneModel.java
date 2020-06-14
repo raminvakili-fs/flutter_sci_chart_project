@@ -14,7 +14,7 @@ public class MacdPaneModel extends BasePaneModel {
     public MacdPaneModel(SciChartBuilder builder, PriceSeries prices) {
         super(builder, MACD, "0.00", false);
 
-        final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 12, 25, 9);
+        final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 7, 20, 4);
 
         final XyDataSeries<Date, Double> histogramDataSeries = builder.newXyDataSeries(Date.class, Double.class).withSeriesName("Histogram").build();
         histogramDataSeries.append(prices.getDateData(), macdPoints.divergenceValues);
