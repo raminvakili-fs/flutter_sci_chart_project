@@ -11,8 +11,6 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
     let channel: FlutterMethodChannel
     let stockChartView: RealtimeTickingStockChartView
     
-    var surface: SCIChartSurface
-    
     
     
     init(_ frame: CGRect, viewId: Int64, channel: FlutterMethodChannel, args: Any?) {
@@ -23,8 +21,7 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
         
         SCIChartSurface.setRuntimeLicenseKey(licenseKey)
 
-        self.surface = SCIChartSurface()
-        self.stockChartView = RealtimeTickingStockChartView(surface: self.surface)
+        self.stockChartView = RealtimeTickingStockChartView()
         
         super.init()
         
@@ -42,6 +39,6 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
     
     
     public func view() -> UIView {
-        return self.surface
+        return stockChartView.chartLayout
     }
 }

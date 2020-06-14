@@ -11,6 +11,8 @@ let StrokeDownColor: uint = 0xFFFF0000
 
 class RealtimeTickingStockChartView {
     
+    let chartLayout = UIView()
+    
     let mainSurface : SCIChartSurface
     let overviewSurface: SCIChartSurface
     
@@ -26,18 +28,32 @@ class RealtimeTickingStockChartView {
     
     var onNewPriceBlock : PriceUpdateCallback!
     
-    init(surface: SCIChartSurface) {
-        self.mainSurface = surface
-        self.overviewSurface = SCIChartSurface()
+    init() {
+        mainSurface = SCIChartSurface()
+        overviewSurface = SCIChartSurface()
+        
+        
+        chartLayout.addSubview(mainSurface)
+        chartLayout.addSubview(overviewSurface)
+        
+        addLayoutConstraints()
         
         self.initExample()
-        self.commonInit()
     }
     
-    func commonInit() {
-//        continueTickingTouched = { [weak self] in self?.subscribePriceUpdate() }
-//        pauseTickingTouched = { [weak self] in self?.clearSubscribtions() }
-//        seriesTypeTouched = { [weak self] in self?.changeSeriesType() }
+    private func addLayoutConstraints() -> Void {
+        overviewSurface.translatesAutoresizingMaskIntoConstraints = false
+        chartLayout.addConstraint(NSLayoutConstraint(item: overviewSurface, attribute: .top, relatedBy: .equal, toItem: chartLayout, attribute: .bottom, multiplier: 1, constant: -100))
+        chartLayout.addConstraint(NSLayoutConstraint(item: overviewSurface, attribute: .bottom, relatedBy: .equal, toItem: chartLayout, attribute: .bottom, multiplier: 1, constant: 0))
+        chartLayout.addConstraint(NSLayoutConstraint(item: overviewSurface, attribute: .right, relatedBy: .equal, toItem: chartLayout, attribute: .right, multiplier: 1, constant: 0))
+        chartLayout.addConstraint(NSLayoutConstraint(item: overviewSurface, attribute: .left, relatedBy: .equal, toItem: chartLayout, attribute: .left, multiplier: 1, constant: 0))
+        
+        mainSurface.translatesAutoresizingMaskIntoConstraints = false
+        chartLayout.addConstraint(NSLayoutConstraint(item: mainSurface, attribute: .top, relatedBy: .equal, toItem: chartLayout, attribute: .top, multiplier: 1, constant: 0))
+        chartLayout.addConstraint(NSLayoutConstraint(item: mainSurface, attribute: .bottom, relatedBy: .equal, toItem: overviewSurface, attribute: .bottom, multiplier: 1, constant: 0))
+        chartLayout.addConstraint(NSLayoutConstraint(item: mainSurface, attribute: .right, relatedBy: .equal, toItem: chartLayout, attribute: .right, multiplier: 1, constant: 0))
+        chartLayout.addConstraint(NSLayoutConstraint(item: mainSurface, attribute: .left, relatedBy: .equal, toItem: chartLayout, attribute: .left, multiplier: 1, constant: 0))
+        
     }
 
     func initExample() {
