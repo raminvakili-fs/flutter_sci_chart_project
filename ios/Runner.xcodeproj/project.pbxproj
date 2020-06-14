@@ -15,6 +15,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD263E8A2492D2F500628BDE /* LicenseKey.swift */; };
+		AD34737F249655DA00E18400 /* PaneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD34737E249655DA00E18400 /* PaneModel.swift */; };
 		AD6C0AE52492D672004B17C6 /* SciLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */; };
 		AD6C0AE72492D6AB004B17C6 /* SciLineChartFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */; };
 		ADBC174E24948F3600E6EB87 /* RealtimeTickingStockChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */; };
@@ -66,6 +67,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACF1CBF8F42BE52E8A70288D /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		AD263E8A2492D2F500628BDE /* LicenseKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicenseKey.swift; sourceTree = "<group>"; };
+		AD34737E249655DA00E18400 /* PaneModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaneModel.swift; sourceTree = "<group>"; };
 		AD6C0AE42492D672004B17C6 /* SciLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciLineChartView.swift; sourceTree = "<group>"; };
 		AD6C0AE62492D6AB004B17C6 /* SciLineChartFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SciLineChartFactory.swift; sourceTree = "<group>"; };
 		ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeTickingStockChartView.swift; sourceTree = "<group>"; };
@@ -183,6 +185,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		AD34737D249655BC00E18400 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "New Group";
+			sourceTree = "<group>";
+		};
 		ADBC174B2494856A00E6EB87 /* LineChart */ = {
 			isa = PBXGroup;
 			children = (
@@ -195,10 +204,12 @@
 		ADBC174C2494858800E6EB87 /* CandleChart */ = {
 			isa = PBXGroup;
 			children = (
+				AD34737D249655BC00E18400 /* New Group */,
 				ADBC175124949A6C00E6EB87 /* Data */,
 				ADBC174D24948F3600E6EB87 /* RealtimeTickingStockChartView.swift */,
 				ADBC174F2494919A00E6EB87 /* SciCandleChartView.swift */,
 				ADBC17C42494A5F800E6EB87 /* SciCandleChartFactory.swift */,
+				AD34737E249655DA00E18400 /* PaneModel.swift */,
 			);
 			name = CandleChart;
 			sourceTree = "<group>";
@@ -401,6 +412,7 @@
 				AD263E8B2492D2F500628BDE /* LicenseKey.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				ADBC17BE24949FB000E6EB87 /* SCDTradeData.m in Sources */,
+				AD34737F249655DA00E18400 /* PaneModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
