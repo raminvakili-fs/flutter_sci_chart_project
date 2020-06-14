@@ -105,8 +105,12 @@ class RealtimeTickingStockChartView {
         _ohlcAxisMarker.set(y1: 0)
         _ohlcAxisMarker.backgroundBrush = SCISolidBrushStyle(colorCode: StrokeUpColor)
         
-        let zoomPanModifier = SCIZoomPanModifier()
-        zoomPanModifier.direction = .xDirection
+        let xAxisDragModifier = SCIXAxisDragModifier()
+        xAxisDragModifier.dragMode = .pan
+        xAxisDragModifier.clipModeX = .stretchAtExtents
+        
+        let pinchZoomModifier = SCIPinchZoomModifier()
+        pinchZoomModifier.direction = .xDirection
         
         let legendModifier = SCILegendModifier()
         legendModifier.orientation = .horizontal
@@ -119,7 +123,8 @@ class RealtimeTickingStockChartView {
             self.mainSurface.renderableSeries.add(ma50Series)
             self.mainSurface.renderableSeries.add(ohlcSeries)
             self.mainSurface.annotations.add(items: self._smaAxisMarker, self._ohlcAxisMarker)
-            self.mainSurface.chartModifiers.add(items: SCIXAxisDragModifier(), zoomPanModifier, SCIZoomExtentsModifier(), legendModifier)
+            //self.mainSurface.chartModifiers.add(items: SCIXAxisDragModifier(), zoomPanModifier, SCIZoomExtentsModifier(), legendModifier)
+            self.mainSurface.chartModifiers.add(items: xAxisDragModifier, pinchZoomModifier, SCIZoomPanModifier(), SCIZoomExtentsModifier(), legendModifier)
         }
     }
     
