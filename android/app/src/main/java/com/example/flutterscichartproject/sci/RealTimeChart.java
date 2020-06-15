@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class RealTimeChart {
 
@@ -66,6 +67,8 @@ public class RealTimeChart {
 
     private SciChartSurface overviewSurface;
     private boolean isOHLC;
+
+    private final Random random = new Random();
 
     private LinearLayout chartLayout;
 
@@ -271,13 +274,11 @@ public class RealTimeChart {
                         visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
                     }
                 }
+                ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
 
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
-//                    }
-//                });
+//                if (random.nextInt(10) < 3) {
+//
+//                }
 
                 smaAxisMarker.setY1(smaLastValue);
                 ohlcAxisMarker.setY1(price.getClose());
