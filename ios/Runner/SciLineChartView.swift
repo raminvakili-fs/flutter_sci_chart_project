@@ -73,9 +73,6 @@ public class SciLineChartView: NSObject, FlutterPlatformView, WKScriptMessageHan
         self.frame = frame
         self.viewId = viewId
         self.channel = channel
-    
-        
-        SCIChartSurface.setRuntimeLicenseKey(licenseKey)
 
         self.surface = SCIChartSurface()
         

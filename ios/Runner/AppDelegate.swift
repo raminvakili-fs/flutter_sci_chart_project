@@ -17,6 +17,8 @@ import Flutter
     let candleChartFactory = SciCandleChartFactory(controller: controller)
     registrar(forPlugin: "SciCandleChart").register(candleChartFactory, withId: "SciCandleChart")
     
+    SCIChartSurface.setRuntimeLicenseKey(licenseKey)
+    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

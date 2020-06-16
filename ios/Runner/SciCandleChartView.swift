@@ -18,8 +18,6 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
         self.viewId = viewId
         self.channel = channel
     
-        
-        SCIChartSurface.setRuntimeLicenseKey(licenseKey)
 
         self.stockChartView = RealtimeTickingStockChartView()
         
