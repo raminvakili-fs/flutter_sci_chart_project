@@ -14,7 +14,7 @@ import io.flutter.plugin.platform.PlatformView;
 import static io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import static io.flutter.plugin.common.MethodChannel.Result;
 
-public class FlutterCandleStick implements PlatformView, MethodCallHandler  {
+public class FlutterCandleStick implements PlatformView, MethodCallHandler {
     private RealTimeChart realTimeChart;
 
     FlutterCandleStick(Context context, BinaryMessenger messenger, int id) {
@@ -35,7 +35,11 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler  {
     public void onMethodCall(MethodCall methodCall, Result result) {
         if ("changeChartType".equals(methodCall.method)) {
             changeChartType(methodCall, result);
-        } else {
+        } else if ("loadHistoryCandles".equals(methodCall.method)) {
+            loadHistoryCandles(methodCall, result);
+        } else if ("addOHLC".equals(methodCall.method)) {
+            addOHLC(methodCall, result);
+        } else  {
             result.notImplemented();
         }
 
@@ -47,7 +51,20 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler  {
         result.success(null);
     }
 
+    private void loadHistoryCandles(MethodCall methodCall, Result result) {
+        String type = (String) methodCall.arguments;
+        realTimeChart.changeChartType(type);
+        result.success(null);
+    }
+
+    private void addOHLC(MethodCall methodCall, Result result) {
+        String type = (String) methodCall.arguments;
+        realTimeChart.changeChartType(type);
+        result.success(null);
+    }
+
     @Override
-    public void dispose() {}
+    public void dispose() {
+    }
 
 }
