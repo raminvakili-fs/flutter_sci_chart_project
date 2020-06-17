@@ -65,7 +65,10 @@ class _CandleChartPageState extends State<CandleChartPage> {
         title: Text('SciCandleChart'),
         actions: <Widget>[
           PopupMenuButton<int>(
-            child: Text('Granularity'),
+            child: Center(child: Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: Text('Granularity'),
+            )),
             onSelected: (choice) => _switchGranularity(choice),
             itemBuilder: (BuildContext context) {
               return {60, 120, 180, 300, 600, 900, 3600}
@@ -85,29 +88,29 @@ class _CandleChartPageState extends State<CandleChartPage> {
                 _controller = controller,
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.only(top: 8),
             child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  FlatButton(
-                    child: Icon(Icons.show_chart),
-                    onPressed: () => _controller?.changeChartType('line'),
-                    color: Colors.white10,
-                  ),
-                  FlatButton(
-                    child: Icon(Icons.equalizer),
-                    onPressed: () => _controller?.changeChartType('candle'),
-                    color: Colors.white10,
-                  ),
-                  FlatButton(
-                    child: Icon(Icons.swap_vert),
-                    onPressed: () => _controller?.changeChartType('ohlc'),
-                    color: Colors.white10,
-                  ),
-                ],
+              alignment: Alignment.topCenter,
+              child: Container(
+                color: Colors.white24,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    FlatButton(
+                      child: Icon(Icons.show_chart),
+                      onPressed: () => _controller?.changeChartType('line'),
+                    ),
+                    FlatButton(
+                      child: Icon(Icons.equalizer),
+                      onPressed: () => _controller?.changeChartType('candle'),
+                    ),
+                    FlatButton(
+                      child: Icon(Icons.swap_vert),
+                      onPressed: () => _controller?.changeChartType('ohlc'),
+                    ),
+                  ],
+                ),
               ),
             ),
           )
