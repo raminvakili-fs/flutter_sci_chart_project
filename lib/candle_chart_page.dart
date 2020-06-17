@@ -1,7 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutterscichartproject/api/deriv_connection_websocket.dart';
 import 'package:flutterscichartproject/charts/sci_candle_chart.dart';
 
 class CandleChartPage extends StatefulWidget {
@@ -11,42 +9,42 @@ class CandleChartPage extends StatefulWidget {
 
 class _CandleChartPageState extends State<CandleChartPage> {
   CandleChartController _controller;
+  BinaryAPI _api;
 
   @override
   void initState() {
     super.initState();
-    _initTickStream();
+    _initStream();
   }
 
-  void _initTickStream() async {
-    WebSocket ws;
-    try {
-      ws = await WebSocket.connect(
-          'wss://ws.binaryws.com/websockets/v3?app_id=1089');
+  void _initStream() async {
+    _api = BinaryAPI();
+    await _api.run();
+    _subscribeTick();
+  }
 
-      if (ws?.readyState == WebSocket.open) {
-        ws.listen(
-          (response) {
-            final data = Map<String, dynamic>.from(json.decode(response));
-            _loadAPIResponse(data);
-          },
-          onDone: () => print('Done!'),
-          onError: (e) => throw new Exception(e),
-        );
-        ws.add(json.encode({
-          "ticks_history": "R_50",
-          "adjust_start_time": 1,
-          "count": 30,
-          "end": "latest",
-          "start": 1,
-          "style": "candles",
-          "subscribe": 1,
-        }));
-      }
-    } catch (e) {
-      ws?.close();
-      print('Error: $e');
-    }
+  void _switchGranularity(int granularity) async {
+    await _api.unsubscribeAll('candles', shouldForced: true);
+    _subscribeTick(granularity: granularity);
+  }
+
+  void _subscribeTick({int granularity = 60}) {
+    _api.subscribe('ticks_history', req: {
+      'ticks_history': 'R_50',
+      'adjust_start_time': 1,
+      'granularity': granularity,
+      'count': 30,
+      'end': 'latest',
+      'start': 1,
+      'style': 'candles',
+      'subscribe': 1,
+    }).listen(
+      (response) {
+        _loadAPIResponse(response);
+      },
+      onDone: () => print('Done!'),
+      onError: (e) => throw new Exception(e),
+    );
   }
 
   void _loadAPIResponse(Map<String, dynamic> data) {
@@ -93,6 +91,11 @@ class _CandleChartPageState extends State<CandleChartPage> {
                   FlatButton(
                     child: Icon(Icons.swap_vert),
                     onPressed: () => _controller?.changeChartType('ohlc'),
+                    color: Colors.white10,
+                  ),
+                  FlatButton(
+                    child: Icon(Icons.swap_vert),
+                    onPressed: () => _switchGranularity(600),
                     color: Colors.white10,
                   ),
                 ],
