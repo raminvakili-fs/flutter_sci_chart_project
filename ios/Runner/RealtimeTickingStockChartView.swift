@@ -20,6 +20,9 @@ class RealtimeTickingStockChartView {
     let macdSurface : SCIChartSurface
     let rsiSurface : SCIChartSurface
     
+    var macdPaneModel : MacdPaneModel?
+    var rsiPaneModel : RsiPaneModel?
+    
     let _ohlcDataSeries = SCIOhlcDataSeries(xType: .date, yType: .double)
     let _xyDataSeries = SCIXyDataSeries(xType: .date, yType: .double)
     
@@ -29,7 +32,8 @@ class RealtimeTickingStockChartView {
     let _sma50 = SCDMovingAverage(length: 5)
     var _lastPrice: SCDPriceBar?
     
-    var onNewPriceBlock : PriceUpdateCallback!
+    var alreadyLoaded = false
+    
     
     init() {
         mainSurface = SCIChartSurface()
@@ -47,22 +51,35 @@ class RealtimeTickingStockChartView {
     }
 
     func startRealtimeChart(prices: SCDPriceSeries) {
-        onNewPriceBlock = { [weak self] (price) in self?.onNewPrice(price) }
-        
-        initDataWithService(prices: prices)
-        createMainPriceChart()
-        
-        let leftAreaAnnotation = SCIBoxAnnotation()
-        let rightAreaAnnotation = SCIBoxAnnotation()
-        createOverviewChartWith(leftAreaAnnotation, rightAreaAnnotation: rightAreaAnnotation)
-        
-        let axis = mainSurface.xAxes[0]
-        axis.visibleRangeChangeListener = { (axis, oldRange, newRange, isAnimating) in
-            print("isAnimating \(isAnimating)")
-            leftAreaAnnotation.set(x1: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
-            leftAreaAnnotation.set(x2: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
-            rightAreaAnnotation.set(x1: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
-            rightAreaAnnotation.set(x2: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
+        if alreadyLoaded {
+            _xyDataSeries.clear()
+            _ohlcDataSeries.clear();
+
+            rsiPaneModel?.updateData(prices: prices)
+            macdPaneModel?.updateData(prices: prices)
+
+            _ohlcDataSeries.append(x: prices.dateData, open: prices.openData, high: prices.highData, low: prices.lowData, close: prices.closeData)
+            _xyDataSeries.append(x: prices.dateData, y: getSmaCurrentValues(prices: prices))
+            
+            // TODO: update overview chart
+            
+        } else {
+            initDataWithService(prices: prices)
+            createMainPriceChart()
+            
+            let leftAreaAnnotation = SCIBoxAnnotation()
+            let rightAreaAnnotation = SCIBoxAnnotation()
+            createOverviewChartWith(leftAreaAnnotation, rightAreaAnnotation: rightAreaAnnotation)
+            
+            let axis = mainSurface.xAxes[0]
+            axis.visibleRangeChangeListener = { (axis, oldRange, newRange, isAnimating) in
+                print("isAnimating \(isAnimating)")
+                leftAreaAnnotation.set(x1: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
+                leftAreaAnnotation.set(x2: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
+                rightAreaAnnotation.set(x1: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
+                rightAreaAnnotation.set(x2: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
+            }
+            alreadyLoaded = true
         }
     }
     
@@ -100,13 +117,11 @@ class RealtimeTickingStockChartView {
         _ohlcDataSeries.append(x: prices.dateData, open: prices.openData, high: prices.highData, low: prices.lowData, close: prices.closeData)
         _xyDataSeries.append(x: prices.dateData, y: getSmaCurrentValues(prices: prices))
         
-        let macdPaneModel = MacdPaneModel(prices: prices)
-        let rsiPaneModel = RsiPaneModel(prices: prices)
+        macdPaneModel = MacdPaneModel(prices: prices)
+        rsiPaneModel = RsiPaneModel(prices: prices)
 
-        initSurface(macdSurface, model: macdPaneModel, isMainPane: false)
-        initSurface(rsiSurface, model: rsiPaneModel, isMainPane: false)
-        
-        subscribePriceUpdate()
+        initSurface(macdSurface, model: macdPaneModel!, isMainPane: false)
+        initSurface(rsiSurface, model: rsiPaneModel!, isMainPane: false)
     }
     
     fileprivate func getSmaCurrentValues(prices: SCDPriceSeries) -> SCIDoubleValues {
@@ -221,12 +236,7 @@ class RealtimeTickingStockChartView {
         
         _lastPrice = price;
     }
-    
-    // To play realtime chart
-    fileprivate func subscribePriceUpdate() {
-//        _marketDataService.subscribePriceUpdate(onNewPriceBlock)
-    }
-    
+
     // To stop
     fileprivate func clearSubscribtions() {
 //        _marketDataService.clearSubscriptions()
