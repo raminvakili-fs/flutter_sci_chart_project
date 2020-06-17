@@ -79,7 +79,7 @@ class CandleChartController {
                 'close': candle.close,
                 'low': candle.low,
                 'high': candle.high,
-                'epoch': candle.epoch,
+                'epoch': candle.epoch.millisecondsSinceEpoch,
               })
           .toList()
     });
@@ -91,8 +91,8 @@ class CandleChartController {
       'close': double.tryParse(ohlc.close),
       'low': double.tryParse(ohlc.low),
       'high': double.tryParse(ohlc.high),
-      'epoch': getSecondsSinceEpochDateTime(ohlc.epoch),
-      'open_time': getSecondsSinceEpochDateTime(ohlc.openTime),
+      'epoch': ohlc.epoch.millisecondsSinceEpoch,
+      'open_time': ohlc.openTime.millisecondsSinceEpoch,
       'granularity': ohlc.granularity,
     });
   }

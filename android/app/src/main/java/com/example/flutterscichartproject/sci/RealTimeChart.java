@@ -43,7 +43,6 @@ public class RealTimeChart {
 
     private final SciChartBuilder sciChartBuilder;
     static final int SECONDS_IN_FIVE_MINUTES = 5 * 60;
-    private static final int DEFAULT_POINT_COUNT = 50;
     private static final int SMA_SERIES_COLOR = 0xFFFFA500;
     private static final int STOKE_UP_COLOR = 0xFF00AA00;
     private static final int STROKE_DOWN_COLOR = 0xFFFF0000;
@@ -55,7 +54,6 @@ public class RealTimeChart {
     private AxisMarkerAnnotation smaAxisMarker;
     private AxisMarkerAnnotation ohlcAxisMarker;
 
-    private IMarketDataService marketDataService;
     private final MovingAverage sma50 = new MovingAverage(5);
     private PriceBar lastPrice;
 
@@ -87,7 +85,6 @@ public class RealTimeChart {
         SciChartBuilder.init(context);
         sciChartBuilder = SciChartBuilder.instance();
         initFields(context);
-        this.marketDataService = new MarketDataService(new Date(2000, 8, 1, 12, 0, 0), 5, 500);
         initChart();
         
         setupChartLayout(context);
@@ -149,32 +146,18 @@ public class RealTimeChart {
         overviewPrototype = new OverviewPrototype(surface, overviewSurface);
     }
 
-    public void startRealTimeChart(){
-        UpdateSuspender.using(surface, new Runnable() {
-            @Override
-            public void run() {
-                //                if (savedInstanceState != null) {
-//                    count = savedInstanceState.getInt("count");
-//
-//                    double rangeMin = savedInstanceState.getDouble("rangeMin");
-//                    double rangeMax = savedInstanceState.getDouble("rangeMax");
-//
-//                    surface.getXAxes().get(0).getVisibleRange().setMinMaxDouble(rangeMin, rangeMax);
-//                }
-                PriceSeries prices = marketDataService.getHistoricalData(DEFAULT_POINT_COUNT);
+    public void startRealTimeChart(PriceSeries prices){
+        UpdateSuspender.using(surface, () -> {
 
-                final RsiPaneModel rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
-                final MacdPaneModel macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
-                initChart(rsiSurface, rsiPaneModel, false);
-                initChart(macdSurface, macdPaneModel, false);
+            final RsiPaneModel rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
+            final MacdPaneModel macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
+            initChart(rsiSurface, rsiPaneModel);
+            initChart(macdSurface, macdPaneModel);
 
-                ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
-                xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
+            ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
+            xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
 
-                overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
-
-                marketDataService.subscribePriceUpdate(onNewPrice());
-            }
+            overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
         });
     }
 
@@ -244,48 +227,39 @@ public class RealTimeChart {
         });
     }
 
-    private synchronized Action1<PriceBar> onNewPrice() {
-        return new Action1<PriceBar>() {
-            @Override
-            public void execute(final PriceBar price) {
-                // Update the last price, or append?
-                double smaLastValue;
-                final IXyDataSeries<Date, Double> overviewDataSeries = overviewPrototype.getOverviewDataSeries();
+    public void onNewPrice(PriceBar price) {
+        // Update the last price, or append?
+        double smaLastValue;
+        final IXyDataSeries<Date, Double> overviewDataSeries = overviewPrototype.getOverviewDataSeries();
 
-                if (lastPrice != null && lastPrice.getDate() == price.getDate()) {
-                    ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
+        if (lastPrice != null && lastPrice.getDate().equals(price.getDate())) {
+            ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
 
-                    smaLastValue = sma50.update(price.getClose()).getCurrent();
-                    xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
+            smaLastValue = sma50.update(price.getClose()).getCurrent();
+            xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
 
-                    overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
-                } else {
-                    ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
+            overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
+        } else {
+            ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
 
-                    smaLastValue = sma50.push(price.getClose()).getCurrent();
-                    xyDataSeries.append(price.getDate(), smaLastValue);
+            smaLastValue = sma50.push(price.getClose()).getCurrent();
+            xyDataSeries.append(price.getDate(), smaLastValue);
 
-                    overviewDataSeries.append(price.getDate(), price.getClose());
+            overviewDataSeries.append(price.getDate(), price.getClose());
 
-                    // If the latest appending point is inside the viewport (i.e. not off the edge of the screen)
-                    // then scroll the viewport 1 bar, to keep the latest bar at the same place
-                    final IRange visibleRange = surface.getXAxes().get(0).getVisibleRange();
-                    if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
-                        visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
-                    }
-                }
-                ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
-
-//                if (random.nextInt(10) < 3) {
-//
-//                }
-
-                smaAxisMarker.setY1(smaLastValue);
-                ohlcAxisMarker.setY1(price.getClose());
-
-                lastPrice = price;
+            // If the latest appending point is inside the viewport (i.e. not off the edge of the screen)
+            // then scroll the viewport 1 bar, to keep the latest bar at the same place
+            final IRange visibleRange = surface.getXAxes().get(0).getVisibleRange();
+            if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
+                visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
             }
-        };
+        }
+        ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
+
+        smaAxisMarker.setY1(smaLastValue);
+        ohlcAxisMarker.setY1(price.getClose());
+
+        lastPrice = price;
     }
 
     public void changeChartType(String type) {
@@ -327,9 +301,9 @@ public class RealTimeChart {
         });
     }
 
-    private void initChart(SciChartSurface surface, BasePaneModel model, boolean isMainPane) {
+    private void initChart(SciChartSurface surface, BasePaneModel model) {
         final CategoryDateAxis xAxis = sciChartBuilder.newCategoryDateAxis()
-                .withVisibility(isMainPane ? View.VISIBLE : View.GONE)
+                //.withVisibility(isMainPane ? View.VISIBLE : View.GONE)
                 .withVisibleRange(sharedXRange)
                 .withGrowBy(0, 0.05)
                 .build();

@@ -4,7 +4,13 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
+import com.example.flutterscichartproject.data.PriceBar;
+import com.example.flutterscichartproject.data.PriceSeries;
 import com.example.flutterscichartproject.sci.RealTimeChart;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -21,8 +27,6 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
         MethodChannel methodChannel = new MethodChannel(messenger, "SciCandleChart" + id);
         methodChannel.setMethodCallHandler(this);
         realTimeChart = new RealTimeChart(context, false);
-        Log.i("TAG2", "init RealTimeOhlcChart: " + realTimeChart);
-        realTimeChart.startRealTimeChart();
     }
 
     @Override
@@ -39,7 +43,7 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
             loadHistoryCandles(methodCall, result);
         } else if ("addOHLC".equals(methodCall.method)) {
             addOHLC(methodCall, result);
-        } else  {
+        } else {
             result.notImplemented();
         }
 
@@ -52,14 +56,22 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
     }
 
     private void loadHistoryCandles(MethodCall methodCall, Result result) {
-        String type = (String) methodCall.arguments;
-        realTimeChart.changeChartType(type);
+        final HashMap argMap = (HashMap) methodCall.arguments;
+        final ArrayList<HashMap> candlesList = (ArrayList<HashMap>) argMap.get("candles");
+        PriceSeries prices = new PriceSeries();
+        for (HashMap candleMap: candlesList) {
+            prices.add(new PriceBar(new Date((long) candleMap.get("epoch")), (double) candleMap.get("open"),
+                    (double) candleMap.get("high"), (double) candleMap.get("low"),(double) candleMap.get("close"), 0L));
+        }
+        realTimeChart.startRealTimeChart(prices);
         result.success(null);
     }
 
     private void addOHLC(MethodCall methodCall, Result result) {
-        String type = (String) methodCall.arguments;
-        realTimeChart.changeChartType(type);
+        final HashMap argMap = (HashMap) methodCall.arguments;
+        PriceBar newOHLC = new PriceBar(new Date((long) argMap.get("open_time")), (double) argMap.get("open"),
+                (double) argMap.get("high"), (double) argMap.get("low"), (double) argMap.get("close"), 0L);
+        realTimeChart.onNewPrice(newOHLC);
         result.success(null);
     }
 
