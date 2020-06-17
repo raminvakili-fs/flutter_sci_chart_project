@@ -1,16 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_deriv_api/api/common/models/candle_model.dart';
-import 'package:flutter_deriv_api/api/common/tick/ohlc.dart';
-import 'package:flutter_deriv_api/api/common/tick/tick_history.dart';
-import 'package:flutter_deriv_api/api/common/tick/tick_history_subscription.dart';
-import 'package:flutter_deriv_api/basic_api/generated/api.dart';
-import 'package:flutter_deriv_api/services/connection/api_manager/base_api.dart';
-import 'package:flutter_deriv_api/services/connection/api_manager/connection_information.dart';
-import 'package:flutter_deriv_api/services/dependency_injector/injector.dart';
-import 'package:flutter_deriv_api/services/dependency_injector/module_container.dart';
-import 'package:flutter_deriv_api/utils/helpers.dart';
 
 typedef void CandleChartCreatedCallback(CandleChartController controller);
 
@@ -71,29 +61,29 @@ class CandleChartController {
     return _channel.invokeMethod('changeChartType', type);
   }
 
-  Future<void> loadHistoryCandles(TickHistory tickHistory) async {
+  Future<void> loadHistoryCandles(List<dynamic> tickHistory) async {
     return _channel.invokeMethod('loadHistoryCandles', {
-      'candles': tickHistory.candles
-          .map((CandleModel candle) => {
-                'open': candle.open,
-                'close': candle.close,
-                'low': candle.low,
-                'high': candle.high,
-                'epoch': candle.epoch.millisecondsSinceEpoch,
+      'candles': tickHistory
+          .map((dynamic candle) => {
+                'open': candle['open'],
+                'close': candle['close'],
+                'low': candle['low'],
+                'high': candle['high'],
+                'epoch': candle['epoch'] * 1000,
               })
           .toList()
     });
   }
 
-  Future<void> addOHLC(OHLC ohlc) async {
+  Future<void> addOHLC(Map<String, dynamic> ohlc) async {
     return _channel.invokeMethod('addOHLC', {
-      'open': double.tryParse(ohlc.open),
-      'close': double.tryParse(ohlc.close),
-      'low': double.tryParse(ohlc.low),
-      'high': double.tryParse(ohlc.high),
-      'epoch': ohlc.epoch.millisecondsSinceEpoch,
-      'open_time': ohlc.openTime.millisecondsSinceEpoch,
-      'granularity': ohlc.granularity,
+      'open': double.tryParse(ohlc['open']),
+      'close': double.tryParse(ohlc['close']),
+      'low': double.tryParse(ohlc['low']),
+      'high': double.tryParse(ohlc['high']),
+      'epoch': ohlc['epoch'] * 1000,
+      'open_time': ohlc['open_time'] * 1000,
+      'granularity': ohlc['granularity'],
     });
   }
 }

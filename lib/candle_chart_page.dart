@@ -1,13 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_deriv_api/api/common/tick/ohlc.dart';
-import 'package:flutter_deriv_api/api/common/tick/tick_base.dart';
-import 'package:flutter_deriv_api/api/common/tick/tick_history.dart';
-import 'package:flutter_deriv_api/api/common/tick/tick_history_subscription.dart';
-import 'package:flutter_deriv_api/basic_api/generated/api.dart';
-import 'package:flutter_deriv_api/services/connection/api_manager/base_api.dart';
-import 'package:flutter_deriv_api/services/connection/api_manager/connection_information.dart';
-import 'package:flutter_deriv_api/services/dependency_injector/injector.dart';
-import 'package:flutter_deriv_api/services/dependency_injector/module_container.dart';
 import 'package:flutterscichartproject/charts/sci_candle_chart.dart';
 
 class CandleChartPage extends StatefulWidget {
@@ -21,40 +15,48 @@ class _CandleChartPageState extends State<CandleChartPage> {
   @override
   void initState() {
     super.initState();
-
-    _connectToWS();
-  }
-  void _connectToWS() async {
-    ModuleContainer().initialize(Injector.getInjector());
-    await Injector.getInjector().get<BaseAPI>().connect(ConnectionInformation(
-        appId: '1089', brand: 'binary', endpoint: 'frontend.binaryws.com'));
-    _getTickStream();
+    _initTickStream();
   }
 
-  void _getTickStream() async {
+  void _initTickStream() async {
+    WebSocket ws;
     try {
-      final TickHistorySubscription subscription =
-      await TickHistory.fetchTicksAndSubscribe(
-        TicksHistoryRequest(
-          ticksHistory: 'R_50',
-          adjustStartTime: 1,
-          count: 20,
-          end: 'latest',
-          start: 1,
-          style: 'candles',
-        ),
-      );
+      ws = await WebSocket.connect(
+          'wss://ws.binaryws.com/websockets/v3?app_id=1089');
 
-      _controller.loadHistoryCandles(subscription.tickHistory);
+      if (ws?.readyState == WebSocket.open) {
+        ws.listen(
+          (response) {
+            final data = Map<String, dynamic>.from(json.decode(response));
+            _loadAPIResponse(data);
+          },
+          onDone: () => print('Done!'),
+          onError: (e) => throw new Exception(e),
+        );
+        ws.add(json.encode({
+          "ticks_history": "R_50",
+          "adjust_start_time": 1,
+          "count": 10,
+          "end": "latest",
+          "start": 1,
+          "style": "candles",
+          "subscribe": 1,
+        }));
+      }
+    } catch (e) {
+      ws?.close();
+      print('Error: $e');
+    }
+  }
 
-      subscription.tickStream.listen((TickBase tick) {
-        final OHLC ohlc = tick;
-        if (ohlc != null) {
-          _controller.addOHLC(ohlc);
-        }
-      });
-    } on Exception catch (e) {
-
+  void _loadAPIResponse(Map<String, dynamic> data) {
+    switch (data['msg_type']) {
+      case 'candles':
+        _controller.loadHistoryCandles(data['candles']);
+        break;
+      case 'ohlc':
+        _controller.addOHLC(data['ohlc']);
+        break;
     }
   }
 
