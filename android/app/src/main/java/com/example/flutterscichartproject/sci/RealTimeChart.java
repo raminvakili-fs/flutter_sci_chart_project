@@ -2,12 +2,9 @@ package com.example.flutterscichartproject.sci;
 
 import android.content.Context;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.example.flutterscichartproject.data.IMarketDataService;
-import com.example.flutterscichartproject.data.MarketDataService;
 import com.example.flutterscichartproject.data.MovingAverage;
 import com.example.flutterscichartproject.data.PriceBar;
 import com.example.flutterscichartproject.data.PriceSeries;
@@ -27,7 +24,6 @@ import com.scichart.charting.visuals.axes.NumericAxis;
 import com.scichart.charting.visuals.renderableSeries.FastLineRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.OhlcRenderableSeriesBase;
 import com.scichart.core.annotations.Orientation;
-import com.scichart.core.common.Action1;
 import com.scichart.core.framework.UpdateSuspender;
 import com.scichart.data.model.DoubleRange;
 import com.scichart.data.model.IRange;
@@ -37,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 public class RealTimeChart {
 
@@ -63,31 +58,24 @@ public class RealTimeChart {
     private SciChartSurface rsiSurface;
     private SciChartSurface macdSurface;
 
-    private SciChartSurface overviewSurface;
-    private boolean isOHLC;
+    private RsiPaneModel rsiPaneModel;
+    private MacdPaneModel macdPaneModel;
 
-    private final Random random = new Random();
+    private SciChartSurface overviewSurface;
 
     private LinearLayout chartLayout;
 
     private final DoubleRange sharedXRange = new DoubleRange();
 
-    public OverviewPrototype getOverviewPrototype() {
-        return overviewPrototype;
-    }
+    private boolean alreadyLoaded = false;
 
-    public SciChartSurface getOverviewSurface() {
-        return overviewSurface;
-    }
-
-    public RealTimeChart(Context context, boolean isOHLC){
-        this.isOHLC = isOHLC;
+    public RealTimeChart(Context context) {
         SciChartBuilder.init(context);
         sciChartBuilder = SciChartBuilder.instance();
         initFields(context);
-        initChart();
-        
         setupChartLayout(context);
+        initializeMainChart(surface);
+        overviewPrototype = new OverviewPrototype(surface, overviewSurface);
     }
 
     private void setupChartLayout(Context context) {
@@ -137,28 +125,35 @@ public class RealTimeChart {
         ohlcAxisMarker = sciChartBuilder.newAxisMarkerAnnotation().withY1(0d).withBackgroundColor(STOKE_UP_COLOR).build();
     }
 
-    public SciChartSurface getSurface() {
-        return surface;
-    }
+    public void startRealTimeChart(PriceSeries prices) {
+        if (alreadyLoaded) {
+            UpdateSuspender.using(surface, () -> {
+                xyDataSeries.clear();
+                ohlcDataSeries.clear();
 
-    private void initChart() {
-        initializeMainChart(surface);
-        overviewPrototype = new OverviewPrototype(surface, overviewSurface);
-    }
+                rsiPaneModel.reloadData(prices);
+                macdPaneModel.reloadData(prices);
 
-    public void startRealTimeChart(PriceSeries prices){
-        UpdateSuspender.using(surface, () -> {
+                ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
+                xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
+                overviewPrototype.getOverviewDataSeries().clear();
+                overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
+            });
+        } else {
+            UpdateSuspender.using(surface, () -> {
 
-            final RsiPaneModel rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
-            final MacdPaneModel macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
-            initChart(rsiSurface, rsiPaneModel);
-            initChart(macdSurface, macdPaneModel);
+                rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
+                macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
+                initChart(rsiSurface, rsiPaneModel);
+                initChart(macdSurface, macdPaneModel);
 
-            ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
-            xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
+                ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
+                xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
 
-            overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
-        });
+                overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
+                alreadyLoaded = true;
+            });
+        }
     }
 
     private List<Double> getSmaCurrentValues(PriceSeries prices) {
@@ -184,23 +179,13 @@ public class RealTimeChart {
 
         final OhlcRenderableSeriesBase chartSeries;
 
-        if (isOHLC){
-            chartSeries = sciChartBuilder.newOhlcSeries()
-                    .withStrokeUp(STOKE_UP_COLOR, STROKE_THICKNESS)
-                    .withStrokeDown(STROKE_DOWN_COLOR, STROKE_THICKNESS)
-                    .withStrokeStyle(STOKE_UP_COLOR)
-                    .withDataSeries(ohlcDataSeries)
-                    .build();
-        } else {
-            chartSeries = sciChartBuilder.newCandlestickSeries()
-                    .withStrokeUp(0xFF00AA00)
-                    .withFillUpColor(0x8800AA00)
-                    .withStrokeDown(0xFFFF0000)
-                    .withFillDownColor(0x88FF0000)
-                    .withDataSeries(ohlcDataSeries)
-                    .build();
-        }
-
+        chartSeries = sciChartBuilder.newCandlestickSeries()
+                .withStrokeUp(0xFF00AA00)
+                .withFillUpColor(0x8800AA00)
+                .withStrokeDown(0xFFFF0000)
+                .withFillDownColor(0x88FF0000)
+                .withDataSeries(ohlcDataSeries)
+                .build();
 
 
         final FastLineRenderableSeries line = sciChartBuilder.newLineSeries().withStrokeStyle(SMA_SERIES_COLOR, STROKE_THICKNESS).withDataSeries(xyDataSeries).build();
@@ -292,12 +277,9 @@ public class RealTimeChart {
     private void changeSeries(OhlcRenderableSeriesBase rSeries) {
         rSeries.setDataSeries(ohlcDataSeries);
 
-        UpdateSuspender.using(surface, new Runnable() {
-            @Override
-            public void run() {
-                surface.getRenderableSeries().remove(0);
-                surface.getRenderableSeries().add(rSeries);
-            }
+        UpdateSuspender.using(surface, () -> {
+            surface.getRenderableSeries().remove(0);
+            surface.getRenderableSeries().add(rSeries);
         });
     }
 

@@ -26,7 +26,7 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
     FlutterCandleStick(Context context, BinaryMessenger messenger, int id) {
         MethodChannel methodChannel = new MethodChannel(messenger, "SciCandleChart" + id);
         methodChannel.setMethodCallHandler(this);
-        realTimeChart = new RealTimeChart(context, false);
+        realTimeChart = new RealTimeChart(context);
     }
 
     @Override

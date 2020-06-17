@@ -63,6 +63,20 @@ class _CandleChartPageState extends State<CandleChartPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('SciCandleChart'),
+        actions: <Widget>[
+          PopupMenuButton<int>(
+            child: Text('Granularity'),
+            onSelected: (choice) => _switchGranularity(choice),
+            itemBuilder: (BuildContext context) {
+              return {60, 120, 180, 300, 600, 900, 3600}
+                  .map((int choice) => PopupMenuItem<int>(
+                        value: choice,
+                        child: Text('$choice'),
+                      ))
+                  .toList();
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: <Widget>[
@@ -91,11 +105,6 @@ class _CandleChartPageState extends State<CandleChartPage> {
                   FlatButton(
                     child: Icon(Icons.swap_vert),
                     onPressed: () => _controller?.changeChartType('ohlc'),
-                    color: Colors.white10,
-                  ),
-                  FlatButton(
-                    child: Icon(Icons.swap_vert),
-                    onPressed: () => _switchGranularity(600),
                     color: Colors.white10,
                   ),
                 ],

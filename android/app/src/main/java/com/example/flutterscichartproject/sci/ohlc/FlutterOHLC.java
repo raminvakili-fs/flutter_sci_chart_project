@@ -24,7 +24,7 @@ public class FlutterOHLC implements PlatformView, MethodCallHandler  {
         textView = new TextView(context);
         methodChannel = new MethodChannel(messenger, "plugins.com.example/ohlc_" + id);
         methodChannel.setMethodCallHandler(this);
-        realTimeChart = new RealTimeChart(context, true);
+        realTimeChart = new RealTimeChart(context);
 //        realTimeChart.startRealTimeChart();
     }
 
