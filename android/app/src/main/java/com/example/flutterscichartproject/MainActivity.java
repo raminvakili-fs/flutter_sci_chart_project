@@ -50,7 +50,7 @@ public class MainActivity extends FlutterActivity {
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(flutterEngine);
         FlutterSciChartProject.registerWith(shimPluginRegistry.registrarFor("SciCandleChart"));
-        GeneratedPluginRegistrant.registerWith(flutterEngine);
+        //GeneratedPluginRegistrant.registerWith(flutterEngine);
         super.configureFlutterEngine(flutterEngine);
     }
 }

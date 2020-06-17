@@ -24,9 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_deriv_api:
-    git:
-      url: git@github.com:regentmarkets/flutter-deriv-api.git
-      ref: dev
+    path: ./flutter-deriv-api/
 
 
   # The following adds the Cupertino Icons font to your application.

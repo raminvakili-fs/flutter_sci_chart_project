@@ -91,7 +91,7 @@ class CandleChartController {
       'close': double.tryParse(ohlc.close),
       'low': double.tryParse(ohlc.low),
       'high': double.tryParse(ohlc.high),
-      'epoch': ohlc.epoch,
+      'epoch': getSecondsSinceEpochDateTime(ohlc.epoch),
       'open_time': getSecondsSinceEpochDateTime(ohlc.openTime),
       'granularity': ohlc.granularity,
     });
