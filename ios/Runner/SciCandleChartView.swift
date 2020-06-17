@@ -9,7 +9,7 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
     let frame: CGRect
     let viewId: Int64
     let channel: FlutterMethodChannel
-    let stockChartView: RealtimeTickingStockChartView
+    let realTimeChart: RealtimeTickingStockChartView
     
     
     
@@ -19,7 +19,7 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
         self.channel = channel
     
 
-        self.stockChartView = RealtimeTickingStockChartView()
+        self.realTimeChart = RealtimeTickingStockChartView()
         
         super.init()
         
@@ -29,7 +29,7 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
             
             switch call.method {
             case "changeChartType":
-                self.stockChartView.changeSeriesType(call.arguments as! String)
+                self.realTimeChart.changeSeriesType(call.arguments as! String)
                 break
             case "loadHistoryCandles":
                 self.loadHistoryCandles(argMap: call.arguments as! [String: Any])
@@ -51,16 +51,16 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
         for candleMap in candlesList {
             priceSeries.add(SCDPriceBar(date: Date.init(timeIntervalSince1970: TimeInterval(candleMap["epoch"] as! Int64) / 1000), open: candleMap["open"] as? NSNumber, high: candleMap["high"] as? NSNumber, low: candleMap["low"] as? NSNumber, close: candleMap["close"] as? NSNumber, volume: 0))
         }
-        stockChartView.initExample(prices: priceSeries)
+        realTimeChart.startRealtimeChart(prices: priceSeries)
     }
     
     private func addOHLC(argMap: [String: Any]) -> Void {
         let newOHLC = SCDPriceBar(date: Date.init(timeIntervalSince1970: TimeInterval(argMap["open_time"] as! Int64) / 1000), open: argMap["open"] as? NSNumber, high: argMap["high"] as? NSNumber, low: argMap["low"] as? NSNumber, close: argMap["close"] as? NSNumber, volume: 0)
         
-        stockChartView.onNewPrice(newOHLC!)
+        realTimeChart.onNewPrice(newOHLC!)
     }
     
     public func view() -> UIView {
-        return stockChartView.chartLayout
+        return realTimeChart.chartLayout
     }
 }

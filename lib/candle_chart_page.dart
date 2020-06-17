@@ -36,7 +36,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
         ws.add(json.encode({
           "ticks_history": "R_50",
           "adjust_start_time": 1,
-          "count": 10,
+          "count": 30,
           "end": "latest",
           "start": 1,
           "style": "candles",

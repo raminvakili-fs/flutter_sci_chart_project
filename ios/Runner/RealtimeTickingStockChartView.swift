@@ -46,7 +46,7 @@ class RealtimeTickingStockChartView {
         
     }
 
-    func initExample(prices: SCDPriceSeries) {
+    func startRealtimeChart(prices: SCDPriceSeries) {
         onNewPriceBlock = { [weak self] (price) in self?.onNewPrice(price) }
         
         initDataWithService(prices: prices)
