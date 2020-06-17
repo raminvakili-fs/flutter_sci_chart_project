@@ -176,7 +176,7 @@ class RealtimeTickingStockChartView {
             self.mainSurface.renderableSeries.add(ohlcSeries)
             self.mainSurface.annotations.add(items: self._smaAxisMarker, self._ohlcAxisMarker)
             //self.mainSurface.chartModifiers.add(items: SCIXAxisDragModifier(), zoomPanModifier, SCIZoomExtentsModifier(), legendModifier)
-            self.mainSurface.chartModifiers.add(items: xAxisDragModifier, pinchZoomModifier, SCIZoomPanModifier(), SCIZoomExtentsModifier(), legendModifier)
+            self.mainSurface.chartModifiers.add(items: xAxisDragModifier, pinchZoomModifier, SCIZoomPanModifier(), SCIZoomExtentsModifier(), legendModifier, SCICursorModifier())
         }
     }
     

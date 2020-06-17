@@ -207,6 +207,8 @@ public class RealTimeChart {
                         .withXAxisDragModifier().withReceiveHandledEvents(true).withDragMode(AxisDragModifierBase.AxisDragMode.Scale).withClipModeX(ClipMode.None).build()
                         .withYAxisDragModifier().withReceiveHandledEvents(true).withDragMode(AxisDragModifierBase.AxisDragMode.Pan).build()
                         .withLegendModifier().withOrientation(Orientation.HORIZONTAL).withPosition(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 20).withReceiveHandledEvents(true).build()
+                        .build(), sciChartBuilder.newModifierGroup()
+                        .withCursorModifier().withShowTooltip(true).withShowAxisLabels(true).build()
                         .build());
             }
         });
