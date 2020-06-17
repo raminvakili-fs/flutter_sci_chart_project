@@ -26,7 +26,6 @@ class RealtimeTickingStockChartView {
     let _smaAxisMarker = SCIAxisMarkerAnnotation()
     let _ohlcAxisMarker = SCIAxisMarkerAnnotation()
     
-    let _marketDataService = SCDMarketDataService(start: NSDate(year: 2000, month: 8, day: 01, hour: 12, minute: 0, second: 0) as Date, timeFrameMinutes: 5, tickTimerIntervals: 1)
     let _sma50 = SCDMovingAverage(length: 5)
     var _lastPrice: SCDPriceBar?
     
@@ -45,13 +44,12 @@ class RealtimeTickingStockChartView {
         
         addLayoutConstraints()
         
-        self.initExample()
     }
 
-    func initExample() {
+    func initExample(prices: SCDPriceSeries) {
         onNewPriceBlock = { [weak self] (price) in self?.onNewPrice(price) }
         
-        initDataWithService(_marketDataService)
+        initDataWithService(prices: prices)
         createMainPriceChart()
         
         let leftAreaAnnotation = SCIBoxAnnotation()
@@ -93,11 +91,10 @@ class RealtimeTickingStockChartView {
         }
     }
     
-    fileprivate func initDataWithService(_ SCDMarketDataService: SCDMarketDataService) {
+    fileprivate func initDataWithService(prices: SCDPriceSeries) {
         _ohlcDataSeries.seriesName = "Price Series"
         _xyDataSeries.seriesName = "50-Period SMA";
 
-        let prices = SCDMarketDataService.getHistoricalData(DefaultPointCount)
         _lastPrice = prices.lastObject()
         
         _ohlcDataSeries.append(x: prices.dateData, open: prices.openData, high: prices.highData, low: prices.lowData, close: prices.closeData)
@@ -198,7 +195,7 @@ class RealtimeTickingStockChartView {
         }
     }
     
-    fileprivate func onNewPrice(_ price: SCDPriceBar) {
+    func onNewPrice(_ price: SCDPriceBar) {
         let smaLastValue: Double
         if (_lastPrice!.date == price.date) {
             _ohlcDataSeries.update(open: price.open.doubleValue, high: price.high.doubleValue, low: price.low.doubleValue, close: price.close.doubleValue, at: _ohlcDataSeries.count - 1)
@@ -227,12 +224,12 @@ class RealtimeTickingStockChartView {
     
     // To play realtime chart
     fileprivate func subscribePriceUpdate() {
-        _marketDataService.subscribePriceUpdate(onNewPriceBlock)
+//        _marketDataService.subscribePriceUpdate(onNewPriceBlock)
     }
     
     // To stop
     fileprivate func clearSubscribtions() {
-        _marketDataService.clearSubscriptions()
+//        _marketDataService.clearSubscriptions()
     }
     
     // To change chart type
