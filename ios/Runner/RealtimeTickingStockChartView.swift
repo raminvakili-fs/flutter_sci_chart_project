@@ -79,6 +79,17 @@ class RealtimeTickingStockChartView {
                 rightAreaAnnotation.set(x1: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
                 rightAreaAnnotation.set(x2: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
             }
+            
+            let horizontalLine1 = SCIHorizontalLineAnnotation()
+            horizontalLine1.set(x1: 0)
+            horizontalLine1.set(y1: prices.closeData.getValueAt(0))
+            horizontalLine1.isEditable = true
+            horizontalLine1.horizontalAlignment = .right
+            horizontalLine1.stroke = SCISolidPenStyle(color: UIColor.red, thickness: 2)
+            horizontalLine1.annotationLabels.add(createLabelWith(text: nil, labelPlacement: .axis))
+            
+            mainSurface.annotations.add(items: horizontalLine1)
+            
             alreadyLoaded = true
         }
     }
@@ -295,5 +306,15 @@ class RealtimeTickingStockChartView {
         chartLayout.addConstraint(NSLayoutConstraint(item: mainSurface, attribute: .right, relatedBy: .equal, toItem: chartLayout, attribute: .right, multiplier: 1, constant: 0))
         chartLayout.addConstraint(NSLayoutConstraint(item: mainSurface, attribute: .left, relatedBy: .equal, toItem: chartLayout, attribute: .left, multiplier: 1, constant: 0))
         
+    }
+    
+    fileprivate func createLabelWith(text: String?, labelPlacement: SCILabelPlacement) -> SCIAnnotationLabel {
+        let annotationLabel = SCIAnnotationLabel()
+        if (text != nil) {
+            annotationLabel.text = text!
+        }
+        annotationLabel.labelPlacement = labelPlacement
+        
+        return annotationLabel
     }
 }

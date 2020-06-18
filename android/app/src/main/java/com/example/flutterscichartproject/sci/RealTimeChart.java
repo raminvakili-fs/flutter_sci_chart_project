@@ -18,6 +18,7 @@ import com.scichart.charting.model.dataSeries.IXyDataSeries;
 import com.scichart.charting.modifiers.AxisDragModifierBase;
 import com.scichart.charting.visuals.SciChartSurface;
 import com.scichart.charting.visuals.annotations.AxisMarkerAnnotation;
+import com.scichart.charting.visuals.annotations.LabelPlacement;
 import com.scichart.charting.visuals.axes.AutoRange;
 import com.scichart.charting.visuals.axes.CategoryDateAxis;
 import com.scichart.charting.visuals.axes.NumericAxis;
@@ -27,6 +28,7 @@ import com.scichart.core.annotations.Orientation;
 import com.scichart.core.framework.UpdateSuspender;
 import com.scichart.data.model.DoubleRange;
 import com.scichart.data.model.IRange;
+import com.scichart.drawing.utility.ColorUtil;
 import com.scichart.extensions.builders.SciChartBuilder;
 
 import java.util.ArrayList;
@@ -141,7 +143,6 @@ public class RealTimeChart {
             });
         } else {
             UpdateSuspender.using(surface, () -> {
-
                 rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
                 macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
                 initChart(rsiSurface, rsiPaneModel);
@@ -151,6 +152,15 @@ public class RealTimeChart {
                 xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
 
                 overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
+
+                surface.getAnnotations().add(sciChartBuilder.newHorizontalLineAnnotation()
+                        .withPosition(0, prices.getCloseData().get(0))
+                        .withStroke(2, ColorUtil.Red)
+                        .withHorizontalGravity(Gravity.RIGHT)
+                        .withIsEditable(true)
+                        .withAnnotationLabel(LabelPlacement.Axis)
+                        .build());
+
                 alreadyLoaded = true;
             });
         }
