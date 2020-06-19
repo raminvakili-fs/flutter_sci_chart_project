@@ -61,9 +61,9 @@ class CandleChartController {
     return _channel.invokeMethod('changeChartType', type);
   }
 
-  Future<void> loadHistoryCandles(List<dynamic> tickHistory) async {
+  Future<void> loadHistoryCandles(List<dynamic> candles) async {
     return _channel.invokeMethod('loadHistoryCandles', {
-      'candles': tickHistory
+      'candles': candles
           .map((dynamic candle) => {
                 'open': candle['open'],
                 'close': candle['close'],
@@ -75,6 +75,21 @@ class CandleChartController {
     });
   }
 
+  Future<void> loadHistoryTicks(Map<String, dynamic> history) async {
+    final List<Map<String, dynamic>> historyList = <Map<String, dynamic>>[];
+    for (int i = 0; i < history['times'].length; i++) {
+      historyList.add({
+        'open': history['prices'][i],
+        'close': history['prices'][i],
+        'low': history['prices'][i],
+        'high': history['prices'][i],
+        'epoch': history['times'][i] * 1000,
+      });
+    }
+    return _channel
+        .invokeMethod('loadHistoryCandles', {'candles': historyList});
+  }
+
   Future<void> addOHLC(Map<String, dynamic> ohlc) async {
     return _channel.invokeMethod('addOHLC', {
       'open': double.tryParse(ohlc['open']),
@@ -84,6 +99,18 @@ class CandleChartController {
       'epoch': ohlc['epoch'] * 1000,
       'open_time': ohlc['open_time'] * 1000,
       'granularity': ohlc['granularity'],
+    });
+  }
+
+  Future<void> addTick(Map<String, dynamic> tick) {
+    return _channel.invokeMethod('addOHLC', {
+      'open': tick['ask'],
+      'close': tick['ask'],
+      'low': tick['ask'],
+      'high': tick['ask'],
+      'epoch': tick['epoch'] * 1000,
+      'open_time': tick['epoch'] * 1000,
+      'granularity': 1,
     });
   }
 }

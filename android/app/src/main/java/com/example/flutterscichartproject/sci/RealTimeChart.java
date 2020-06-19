@@ -279,7 +279,8 @@ public class RealTimeChart {
             default:
                 changeSeries(sciChartBuilder.newMountainSeries()
                         .withAreaFillColor(0x33FFF9)
-                        .withOpacity(0.5f)
+                        .withAreaFillLinearGradientColors(0x2233FFF9, 0x33FFF9)
+                        .withOpacity(0.8f)
                         .withDataSeries(ohlcDataSeries)
                         .build());
                 break;

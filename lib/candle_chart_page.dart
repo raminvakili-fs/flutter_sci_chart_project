@@ -11,6 +11,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
   CandleChartController _controller;
   BinaryAPI _api;
   int _dataPoints = 0;
+  String _tickStyle = 'candles';
 
   @override
   void initState() {
@@ -25,21 +26,23 @@ class _CandleChartPageState extends State<CandleChartPage> {
   }
 
   void _switchGranularity(int granularity) async {
-    await _api.unsubscribeAll('candles', shouldForced: true);
+    await _api.unsubscribeAll(_tickStyle, shouldForced: true);
+    _tickStyle = _tickStyle = granularity == 1 ? 'ticks' : 'candles';
     _subscribeTick(granularity: granularity);
   }
 
   void _subscribeTick({int granularity = 60}) {
-    _api.subscribe('ticks_history', req: {
+    final Map<String, dynamic> request = {
       'ticks_history': 'R_50',
       'adjust_start_time': 1,
-      'granularity': granularity,
+      'granularity': granularity > 1 ? granularity : null,
       'count': 30,
       'end': 'latest',
       'start': 1,
-      'style': 'candles',
+      'style': _tickStyle,
       'subscribe': 1,
-    }).listen(
+    };
+    _api.subscribe('ticks_history', req: request).listen(
       (response) {
         _loadAPIResponse(response);
       },
@@ -59,6 +62,15 @@ class _CandleChartPageState extends State<CandleChartPage> {
         _controller.addOHLC(data['ohlc']);
         _dataPoints++;
         break;
+      case 'history':
+        _dataPoints = 0;
+        _controller.loadHistoryTicks(data['history']);
+        _dataPoints += data['history']['times'].length;
+        break;
+      case 'tick':
+        _dataPoints++;
+        _controller.addTick(data['tick']);
+        break;
     }
     setState(() {});
   }
@@ -70,13 +82,16 @@ class _CandleChartPageState extends State<CandleChartPage> {
         title: Text('Data points: $_dataPoints'),
         actions: <Widget>[
           PopupMenuButton<int>(
-            child: Center(child: Padding(
+            child: Center(
+                child: Padding(
               padding: const EdgeInsets.only(right: 4),
               child: Text('Granularity'),
             )),
-            onSelected: (choice) => _switchGranularity(choice),
+            onSelected: (choice) {
+              _switchGranularity(choice);
+            },
             itemBuilder: (BuildContext context) {
-              return {60, 120, 180, 300, 600, 900, 3600}
+              return {1, 60, 120, 180, 300, 600, 900, 3600}
                   .map((int choice) => PopupMenuItem<int>(
                         value: choice,
                         child: Text('$choice'),
