@@ -10,6 +10,7 @@ class CandleChartPage extends StatefulWidget {
 class _CandleChartPageState extends State<CandleChartPage> {
   CandleChartController _controller;
   BinaryAPI _api;
+  int _dataPoints = 0;
 
   @override
   void initState() {
@@ -50,19 +51,23 @@ class _CandleChartPageState extends State<CandleChartPage> {
   void _loadAPIResponse(Map<String, dynamic> data) {
     switch (data['msg_type']) {
       case 'candles':
+        _dataPoints = 0;
         _controller.loadHistoryCandles(data['candles']);
+        _dataPoints += data['candles'].length;
         break;
       case 'ohlc':
         _controller.addOHLC(data['ohlc']);
+        _dataPoints++;
         break;
     }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SciCandleChart'),
+        title: Text('Data points: $_dataPoints'),
         actions: <Widget>[
           PopupMenuButton<int>(
             child: Center(child: Padding(

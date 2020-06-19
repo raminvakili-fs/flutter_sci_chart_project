@@ -22,8 +22,8 @@ import com.scichart.charting.visuals.annotations.LabelPlacement;
 import com.scichart.charting.visuals.axes.AutoRange;
 import com.scichart.charting.visuals.axes.CategoryDateAxis;
 import com.scichart.charting.visuals.axes.NumericAxis;
+import com.scichart.charting.visuals.renderableSeries.BaseRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastLineRenderableSeries;
-import com.scichart.charting.visuals.renderableSeries.OhlcRenderableSeriesBase;
 import com.scichart.core.annotations.Orientation;
 import com.scichart.core.framework.UpdateSuspender;
 import com.scichart.data.model.DoubleRange;
@@ -156,7 +156,7 @@ public class RealTimeChart {
                 surface.getAnnotations().add(sciChartBuilder.newHorizontalLineAnnotation()
                         .withPosition(0, prices.getCloseData().get(0))
                         .withStroke(2, ColorUtil.Red)
-                        .withHorizontalGravity(Gravity.RIGHT)
+                        .withHorizontalGravity(Gravity.END)
                         .withIsEditable(true)
                         .withAnnotationLabel(LabelPlacement.Axis)
                         .build());
@@ -187,9 +187,7 @@ public class RealTimeChart {
                 .build();
         final NumericAxis yAxis = sciChartBuilder.newNumericAxis().withAutoRangeMode(AutoRange.Always).build();
 
-        final OhlcRenderableSeriesBase chartSeries;
-
-        chartSeries = sciChartBuilder.newCandlestickSeries()
+        BaseRenderableSeries chartSeries = sciChartBuilder.newCandlestickSeries()
                 .withStrokeUp(0xFF00AA00)
                 .withFillUpColor(0x8800AA00)
                 .withStrokeDown(0xFFFF0000)
@@ -205,7 +203,7 @@ public class RealTimeChart {
             public synchronized void run() {
                 Collections.addAll(surface.getXAxes(), xAxis);
                 Collections.addAll(surface.getYAxes(), yAxis);
-                Collections.addAll(surface.getRenderableSeries(), chartSeries, line);
+                Collections.addAll(surface.getRenderableSeries(), line, chartSeries);
                 Collections.addAll(surface.getAnnotations(), smaAxisMarker, ohlcAxisMarker);
                 Collections.addAll(surface.getChartModifiers(), sciChartBuilder.newModifierGroup()
                         .withXAxisDragModifier().build()
@@ -269,6 +267,7 @@ public class RealTimeChart {
                         .withFillDownColor(0x88FF0000)
                         .withDataSeries(ohlcDataSeries)
                         .build());
+                break;
             case "ohlc":
                 changeSeries(sciChartBuilder.newOhlcSeries()
                         .withStrokeUp(STOKE_UP_COLOR, STROKE_THICKNESS)
@@ -276,28 +275,28 @@ public class RealTimeChart {
                         .withStrokeStyle(STOKE_UP_COLOR)
                         .withDataSeries(ohlcDataSeries)
                         .build());
-//            default:
-//                changeSeries(sciChartBuilder.newMountainSeries()
-//                        .withAreaFillColor(0x33FFF9)
-//                        .withOpacity(0.5f)
-//                        .withDataSeries(ohlcDataSeries)
-//                        .build());
+                break;
+            default:
+                changeSeries(sciChartBuilder.newMountainSeries()
+                        .withAreaFillColor(0x33FFF9)
+                        .withOpacity(0.5f)
+                        .withDataSeries(ohlcDataSeries)
+                        .build());
+                break;
         }
 
     }
 
-    private void changeSeries(OhlcRenderableSeriesBase rSeries) {
+    private void changeSeries(BaseRenderableSeries rSeries) {
         rSeries.setDataSeries(ohlcDataSeries);
-
         UpdateSuspender.using(surface, () -> {
-            surface.getRenderableSeries().remove(0);
+            surface.getRenderableSeries().remove(1);
             surface.getRenderableSeries().add(rSeries);
         });
     }
 
     private void initChart(SciChartSurface surface, BasePaneModel model) {
         final CategoryDateAxis xAxis = sciChartBuilder.newCategoryDateAxis()
-                //.withVisibility(isMainPane ? View.VISIBLE : View.GONE)
                 .withVisibleRange(sharedXRange)
                 .withGrowBy(0, 0.05)
                 .build();
