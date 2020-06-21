@@ -16,7 +16,9 @@ import com.scichart.charting.Direction2D;
 import com.scichart.charting.model.dataSeries.IOhlcDataSeries;
 import com.scichart.charting.model.dataSeries.IXyDataSeries;
 import com.scichart.charting.modifiers.AxisDragModifierBase;
+import com.scichart.charting.numerics.labelProviders.ICategoryLabelProvider;
 import com.scichart.charting.visuals.SciChartSurface;
+import com.scichart.charting.visuals.annotations.AnnotationCoordinateMode;
 import com.scichart.charting.visuals.annotations.AxisMarkerAnnotation;
 import com.scichart.charting.visuals.annotations.LabelPlacement;
 import com.scichart.charting.visuals.axes.AutoRange;
@@ -26,12 +28,14 @@ import com.scichart.charting.visuals.renderableSeries.BaseRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastLineRenderableSeries;
 import com.scichart.core.annotations.Orientation;
 import com.scichart.core.framework.UpdateSuspender;
+import com.scichart.data.model.DateRange;
 import com.scichart.data.model.DoubleRange;
 import com.scichart.data.model.IRange;
 import com.scichart.drawing.utility.ColorUtil;
 import com.scichart.extensions.builders.SciChartBuilder;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +54,8 @@ public class RealTimeChart {
 
     private AxisMarkerAnnotation smaAxisMarker;
     private AxisMarkerAnnotation ohlcAxisMarker;
+
+    private CategoryDateAxis xAxis;
 
     private final MovingAverage sma50 = new MovingAverage(5);
     private PriceBar lastPrice;
@@ -179,7 +185,7 @@ public class RealTimeChart {
     }
 
     private void initializeMainChart(final SciChartSurface surface) {
-        final CategoryDateAxis xAxis = sciChartBuilder.newCategoryDateAxis()
+        xAxis = sciChartBuilder.newCategoryDateAxis()
                 .withBarTimeFrame(SECONDS_IN_FIVE_MINUTES)
                 .withVisibleRange(sharedXRange)
                 .withDrawMinorGridLines(false)
@@ -248,6 +254,9 @@ public class RealTimeChart {
             if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
                 visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
             }
+
+            addMarkerForDataPoint(price);
+
         }
         ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
 
@@ -255,6 +264,19 @@ public class RealTimeChart {
         ohlcAxisMarker.setY1(price.getClose());
 
         lastPrice = price;
+    }
+
+    private void addMarkerForDataPoint(PriceBar price) {
+        ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider)xAxis.getLabelProvider();
+        int index = categoryLabelProvider.transformDataToIndex(price.getDate());
+        float x = xAxis.getCoordinate(index);
+        surface.getAnnotations().add(sciChartBuilder.newTextAnnotation()
+                .withX1(x).withY1(price.getHigh())
+                .withIsEditable(true)
+                .withText("Marker")
+                .withFontStyle(20, ColorUtil.White)
+                .withZIndex(1) // draw this annotation above other annotations
+                .build());
     }
 
     public void changeChartType(String type) {
@@ -319,4 +341,12 @@ public class RealTimeChart {
         surface.setAnnotations(model.annotations);
     }
 
+    public void scrollToCurrentTick() {
+        if (lastPrice != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(lastPrice.getDate());
+            calendar.add(Calendar.MINUTE, -1);
+            xAxis.animateVisibleRangeTo(new DateRange(calendar.getTime(), lastPrice.getDate()), 200);
+        }
+    }
 }

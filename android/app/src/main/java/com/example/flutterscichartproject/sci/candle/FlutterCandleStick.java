@@ -37,16 +37,22 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
 
     @Override
     public void onMethodCall(MethodCall methodCall, Result result) {
-        if ("changeChartType".equals(methodCall.method)) {
-            changeChartType(methodCall, result);
-        } else if ("loadHistoryCandles".equals(methodCall.method)) {
-            loadHistoryCandles(methodCall, result);
-        } else if ("addOHLC".equals(methodCall.method)) {
-            addOHLC(methodCall, result);
-        } else {
-            result.notImplemented();
+        switch (methodCall.method) {
+            case "changeChartType":
+                changeChartType(methodCall, result);
+                break;
+            case "loadHistoryCandles":
+                loadHistoryCandles(methodCall, result);
+                break;
+            case "addOHLC":
+                addOHLC(methodCall, result);
+                break;
+            case "scrollToCurrentTick":
+                realTimeChart.scrollToCurrentTick();
+                break;
+            default:
+                result.notImplemented();
         }
-
     }
 
     private void changeChartType(MethodCall methodCall, Result result) {
@@ -59,9 +65,9 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
         final HashMap argMap = (HashMap) methodCall.arguments;
         final ArrayList<HashMap> candlesList = (ArrayList<HashMap>) argMap.get("candles");
         PriceSeries prices = new PriceSeries();
-        for (HashMap candleMap: candlesList) {
+        for (HashMap candleMap : candlesList) {
             prices.add(new PriceBar(new Date((long) candleMap.get("epoch")), (double) candleMap.get("open"),
-                    (double) candleMap.get("high"), (double) candleMap.get("low"),(double) candleMap.get("close"), 0L));
+                    (double) candleMap.get("high"), (double) candleMap.get("low"), (double) candleMap.get("close"), 0L));
         }
         realTimeChart.startRealTimeChart(prices);
         result.success(null);

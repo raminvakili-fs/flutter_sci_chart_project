@@ -113,4 +113,7 @@ class CandleChartController {
       'granularity': 1,
     });
   }
+
+  Future<void> scrollToCurrentTick() =>
+      _channel.invokeMethod('scrollToCurrentTick');
 }

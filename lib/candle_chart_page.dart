@@ -10,7 +10,7 @@ class CandleChartPage extends StatefulWidget {
 class _CandleChartPageState extends State<CandleChartPage> {
   CandleChartController _controller;
   BinaryAPI _api;
-  int _dataPoints = 0;
+  int _numOfTicks = 0;
   String _tickStyle = 'candles';
 
   @override
@@ -36,7 +36,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
       'ticks_history': 'R_50',
       'adjust_start_time': 1,
       'granularity': granularity > 1 ? granularity : null,
-      'count': 30,
+      'count': 1000,
       'end': 'latest',
       'start': 1,
       'style': _tickStyle,
@@ -54,21 +54,21 @@ class _CandleChartPageState extends State<CandleChartPage> {
   void _loadAPIResponse(Map<String, dynamic> data) {
     switch (data['msg_type']) {
       case 'candles':
-        _dataPoints = 0;
+        _numOfTicks = 0;
         _controller.loadHistoryCandles(data['candles']);
-        _dataPoints += data['candles'].length;
+        _numOfTicks += data['candles'].length;
         break;
       case 'ohlc':
         _controller.addOHLC(data['ohlc']);
-        _dataPoints++;
+        _numOfTicks++;
         break;
       case 'history':
-        _dataPoints = 0;
+        _numOfTicks = 0;
         _controller.loadHistoryTicks(data['history']);
-        _dataPoints += data['history']['times'].length;
+        _numOfTicks += data['history']['times'].length;
         break;
       case 'tick':
-        _dataPoints++;
+        _numOfTicks++;
         _controller.addTick(data['tick']);
         break;
     }
@@ -79,8 +79,12 @@ class _CandleChartPageState extends State<CandleChartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Data points: $_dataPoints'),
+        title: Text('Number of ticks: $_numOfTicks'),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.arrow_forward),
+            onPressed: ()=> _controller.scrollToCurrentTick(),
+          ),
           PopupMenuButton<int>(
             child: Center(
                 child: Padding(

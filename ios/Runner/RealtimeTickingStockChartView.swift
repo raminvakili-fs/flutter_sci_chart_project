@@ -13,6 +13,8 @@ class RealtimeTickingStockChartView {
     
     let chartLayout = UIView()
     
+    var xAxis : SCICategoryDateAxis?
+    
     let sharedXRange = SCIDoubleRange()
     
     let mainSurface : SCIChartSurface
@@ -147,10 +149,10 @@ class RealtimeTickingStockChartView {
     }
 
     fileprivate func createMainPriceChart() {
-        let xAxis = SCICategoryDateAxis()
-        xAxis.visibleRange = sharedXRange
-        xAxis.growBy = SCIDoubleRange(min: 0.0, max: 0.1)
-        xAxis.drawMajorGridLines = false
+        xAxis = SCICategoryDateAxis()
+        xAxis?.visibleRange = sharedXRange
+        xAxis?.growBy = SCIDoubleRange(min: 0.0, max: 0.1)
+        xAxis?.drawMajorGridLines = false
         
         let yAxis = SCINumericAxis()
         yAxis.autoRange = .always
@@ -181,7 +183,7 @@ class RealtimeTickingStockChartView {
         legendModifier.margins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         SCIUpdateSuspender.usingWith(mainSurface) {
-            self.mainSurface.xAxes.add(xAxis)
+            self.mainSurface.xAxes.add(self.xAxis!)
             self.mainSurface.yAxes.add(yAxis)
             self.mainSurface.renderableSeries.add(ma50Series)
             self.mainSurface.renderableSeries.add(ohlcSeries)
@@ -221,6 +223,20 @@ class RealtimeTickingStockChartView {
         }
     }
     
+    fileprivate func addMarkerForDataPoint(_ price: SCDPriceBar) {
+        let calculator = xAxis!.currentCoordinateCalculator
+        let labelProvider = xAxis?.labelProvider as! ISCICategoryLabelProvider
+        let index = labelProvider.transformDataToIndex(price.date)
+        let x = calculator.getCoordinate(Double(index))
+        
+        let textAnnotation2 = SCITextAnnotation()
+        textAnnotation2.set(x1: x)
+        textAnnotation2.set(y1: price.high.doubleValue)
+        textAnnotation2.isEditable = true
+        textAnnotation2.text = "Marker"
+        textAnnotation2.fontStyle = SCIFontStyle(fontSize: 20, andTextColor: .white)
+    }
+    
     func onNewPrice(_ price: SCDPriceBar) {
         let smaLastValue: Double
         if (_lastPrice!.date == price.date) {
@@ -238,6 +254,8 @@ class RealtimeTickingStockChartView {
             if (visibleRange.maxAsDouble > Double(_ohlcDataSeries.count)) {
                 visibleRange.setDoubleMinTo(visibleRange.minAsDouble + 1, maxTo: visibleRange.maxAsDouble + 1)
             }
+            
+            addMarkerForDataPoint(price)
         }
         
         let color = price.close.compare(price.open) == .orderedDescending ? StrokeUpColor : StrokeDownColor
@@ -246,11 +264,6 @@ class RealtimeTickingStockChartView {
         _smaAxisMarker.set(y1: smaLastValue)
         
         _lastPrice = price;
-    }
-
-    // To stop
-    fileprivate func clearSubscribtions() {
-//        _marketDataService.clearSubscriptions()
     }
     
     // To change chart type
