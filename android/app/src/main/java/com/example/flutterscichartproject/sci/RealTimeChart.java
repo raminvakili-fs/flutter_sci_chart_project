@@ -18,7 +18,6 @@ import com.scichart.charting.model.dataSeries.IXyDataSeries;
 import com.scichart.charting.modifiers.AxisDragModifierBase;
 import com.scichart.charting.numerics.labelProviders.ICategoryLabelProvider;
 import com.scichart.charting.visuals.SciChartSurface;
-import com.scichart.charting.visuals.annotations.AnnotationCoordinateMode;
 import com.scichart.charting.visuals.annotations.AxisMarkerAnnotation;
 import com.scichart.charting.visuals.annotations.LabelPlacement;
 import com.scichart.charting.visuals.axes.AutoRange;
@@ -28,14 +27,13 @@ import com.scichart.charting.visuals.renderableSeries.BaseRenderableSeries;
 import com.scichart.charting.visuals.renderableSeries.FastLineRenderableSeries;
 import com.scichart.core.annotations.Orientation;
 import com.scichart.core.framework.UpdateSuspender;
-import com.scichart.data.model.DateRange;
 import com.scichart.data.model.DoubleRange;
 import com.scichart.data.model.IRange;
+import com.scichart.data.model.IndexRange;
 import com.scichart.drawing.utility.ColorUtil;
 import com.scichart.extensions.builders.SciChartBuilder;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -343,10 +341,9 @@ public class RealTimeChart {
 
     public void scrollToCurrentTick() {
         if (lastPrice != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(lastPrice.getDate());
-            calendar.add(Calendar.MINUTE, -1);
-            xAxis.animateVisibleRangeTo(new DateRange(calendar.getTime(), lastPrice.getDate()), 200);
+            ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider)xAxis.getLabelProvider();
+            int lastTickIndex = categoryLabelProvider.transformDataToIndex(lastPrice.getDate());
+            xAxis.animateVisibleRangeTo(new IndexRange(Math.max(lastTickIndex - 20, 0), lastTickIndex), 400);
         }
     }
 }

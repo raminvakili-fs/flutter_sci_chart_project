@@ -330,4 +330,12 @@ class RealtimeTickingStockChartView {
         
         return annotationLabel
     }
+    
+    func scrollToCurrentTick() {
+        if let lastPrice = _lastPrice {
+            let labelProvider = xAxis?.labelProvider as! ISCICategoryLabelProvider
+            let lastTickIndex = labelProvider.transformDataToIndex(lastPrice.date)
+            xAxis?.animateVisibleRange(to: SCIIndexRange(min: Int32(max(lastTickIndex - 20 , 0)), max: Int32(lastTickIndex)), withDuration: 0.4)
+        }
+    }
 }

@@ -37,6 +37,9 @@ public class SciCandleChartView: NSObject, FlutterPlatformView, WKScriptMessageH
             case "addOHLC":
                 self.addOHLC(argMap: call.arguments as! [String: Any])
                 break
+            case "scrollToCurrentTick":
+                self.realTimeChart.scrollToCurrentTick()
+                break
             default:
                 print("Not implemented")
             }
