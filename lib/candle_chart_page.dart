@@ -36,7 +36,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
       'ticks_history': 'R_50',
       'adjust_start_time': 1,
       'granularity': granularity > 1 ? granularity : null,
-      'count': 1000,
+      'count': 200,
       'end': 'latest',
       'start': 1,
       'style': _tickStyle,
@@ -83,7 +83,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.arrow_forward),
-            onPressed: ()=> _controller.scrollToCurrentTick(),
+            onPressed: () => _controller.scrollToCurrentTick(),
           ),
           PopupMenuButton<int>(
             child: Center(

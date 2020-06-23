@@ -31,7 +31,6 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
 
     @Override
     public View getView() {
-        Log.i("TAG2", "get surface: " + realTimeChart);
         return realTimeChart.getChartLayout();
     }
 
@@ -66,8 +65,12 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
         final ArrayList<HashMap> candlesList = (ArrayList<HashMap>) argMap.get("candles");
         PriceSeries prices = new PriceSeries();
         for (HashMap candleMap : candlesList) {
-            prices.add(new PriceBar(new Date((long) candleMap.get("epoch")), (double) candleMap.get("open"),
-                    (double) candleMap.get("high"), (double) candleMap.get("low"), (double) candleMap.get("close"), 0L));
+            prices.add(new PriceBar(new Date((long) candleMap.get("epoch")),
+                    (candleMap.get("open") instanceof Integer) ? 1.0 * (int) (candleMap.get("open")) : (double) (candleMap.get("open")),
+                    (candleMap.get("high") instanceof Integer) ? 1.0 * (int) (candleMap.get("high")) : (double) (candleMap.get("high")),
+                    (candleMap.get("low") instanceof Integer) ? 1.0 * (int) (candleMap.get("low")) : (double) (candleMap.get("low")),
+                    (candleMap.get("close") instanceof Integer) ? 1.0 * (int) (candleMap.get("close")) : (double) (candleMap.get("close")),
+                    0L));
         }
         realTimeChart.startRealTimeChart(prices);
         result.success(null);

@@ -54,6 +54,7 @@ public class RealTimeChart {
     private AxisMarkerAnnotation ohlcAxisMarker;
 
     private CategoryDateAxis xAxis;
+    private NumericAxis yAxis;
 
     private final MovingAverage sma50 = new MovingAverage(5);
     private PriceBar lastPrice;
@@ -189,7 +190,7 @@ public class RealTimeChart {
                 .withDrawMinorGridLines(false)
                 .withGrowBy(0, 0.1)
                 .build();
-        final NumericAxis yAxis = sciChartBuilder.newNumericAxis().withAutoRangeMode(AutoRange.Always).build();
+        yAxis = sciChartBuilder.newNumericAxis().withAutoRangeMode(AutoRange.Always).build();
 
         BaseRenderableSeries chartSeries = sciChartBuilder.newCandlestickSeries()
                 .withStrokeUp(0xFF00AA00)
@@ -253,7 +254,7 @@ public class RealTimeChart {
                 visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
             }
 
-            addMarkerForDataPoint(price);
+            addMarkerForDataPoint(price.getDate(), price.getHigh());
 
         }
         ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
@@ -264,14 +265,17 @@ public class RealTimeChart {
         lastPrice = price;
     }
 
-    private void addMarkerForDataPoint(PriceBar price) {
+    private void addMarkerForDataPoint(Date date, double price) {
         ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider)xAxis.getLabelProvider();
-        int index = categoryLabelProvider.transformDataToIndex(price.getDate());
+        int index = categoryLabelProvider.transformDataToIndex(date);
+
         float x = xAxis.getCoordinate(index);
+        float y = (float) price;
+
         surface.getAnnotations().add(sciChartBuilder.newTextAnnotation()
-                .withX1(x).withY1(price.getHigh())
-                .withIsEditable(true)
-                .withText("Marker")
+                .withX1(x)
+                .withY1(y)
+                .withText("Marker x: "+ x + ", y: " + y)
                 .withFontStyle(20, ColorUtil.White)
                 .withZIndex(1) // draw this annotation above other annotations
                 .build());
