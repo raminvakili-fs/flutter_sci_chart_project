@@ -41,8 +41,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class RealTimeChart {
+
+    private Random random = new Random();
 
     private final SciChartBuilder sciChartBuilder;
     static final int SECONDS_IN_FIVE_MINUTES = 5 * 60;
@@ -168,6 +171,12 @@ public class RealTimeChart {
             ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
             xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
             overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
+
+            for (PriceBar priceBar: prices) {
+                if (random.nextInt(100) > 97) {
+                    addMarkerForDataPoint(priceBar.getDate(), priceBar.getHigh());
+                }
+            }
         });
     }
 
@@ -326,11 +335,12 @@ public class RealTimeChart {
     }
 
     private void addMarkerForDataPoint(Date date, double price) {
+        final int index = getDatesIndex(date);
         surface.getAnnotations().add(sciChartBuilder.newTextAnnotation()
-                .withX1(getDatesIndex(date))
+                .withX1(index)
                 .withY1(price)
-                .withText("Marker y: " + price)
-                .withFontStyle(20, ColorUtil.White)
+                .withText("" + price)
+                .withFontStyle(10, ColorUtil.White)
                 .withZIndex(1) // draw this annotation above other annotations
                 .build());
     }
