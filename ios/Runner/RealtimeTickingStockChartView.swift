@@ -13,7 +13,12 @@ class RealtimeTickingStockChartView {
     
     let chartLayout = UIView()
     
+    var barrier = 0.1
+    
     var xAxis : SCICategoryDateAxis?
+    var barrierLine : SCIHorizontalLineAnnotation?
+    var _smaAxisMarker : SCIHorizontalLineAnnotation?
+    var _ohlcAxisMarker : SCIHorizontalLineAnnotation?
     
     let sharedXRange = SCIDoubleRange()
     
@@ -27,9 +32,6 @@ class RealtimeTickingStockChartView {
     
     let _ohlcDataSeries = SCIOhlcDataSeries(xType: .date, yType: .double)
     let _xyDataSeries = SCIXyDataSeries(xType: .date, yType: .double)
-    
-    let _smaAxisMarker = SCIAxisMarkerAnnotation()
-    let _ohlcAxisMarker = SCIAxisMarkerAnnotation()
     
     let _sma50 = SCDMovingAverage(length: 5)
     var _lastPrice: SCDPriceBar?
@@ -49,51 +51,76 @@ class RealtimeTickingStockChartView {
         chartLayout.addSubview(rsiSurface)
         
         addLayoutConstraints()
-        
     }
 
     func startRealtimeChart(prices: SCDPriceSeries) {
-        if alreadyLoaded {
-            _xyDataSeries.clear()
-            _ohlcDataSeries.clear();
+        SCIUpdateSuspender.usingWith(mainSurface) {
+            if self.alreadyLoaded {
+                self._xyDataSeries.clear()
+                self._ohlcDataSeries.clear();
 
-            rsiPaneModel?.updateData(prices: prices)
-            macdPaneModel?.updateData(prices: prices)
+                self.rsiPaneModel?.updateData(prices: prices)
+                self.macdPaneModel?.updateData(prices: prices)
 
-            _ohlcDataSeries.append(x: prices.dateData, open: prices.openData, high: prices.highData, low: prices.lowData, close: prices.closeData)
-            _xyDataSeries.append(x: prices.dateData, y: getSmaCurrentValues(prices: prices))
-            
-            // TODO: update overview chart
-            
-        } else {
-            initDataWithService(prices: prices)
-            createMainPriceChart()
-            
-            let leftAreaAnnotation = SCIBoxAnnotation()
-            let rightAreaAnnotation = SCIBoxAnnotation()
-            createOverviewChartWith(leftAreaAnnotation, rightAreaAnnotation: rightAreaAnnotation)
-            
-            let axis = mainSurface.xAxes[0]
-            axis.visibleRangeChangeListener = { (axis, oldRange, newRange, isAnimating) in
-                print("isAnimating \(isAnimating)")
-                leftAreaAnnotation.set(x1: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
-                leftAreaAnnotation.set(x2: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
-                rightAreaAnnotation.set(x1: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
-                rightAreaAnnotation.set(x2: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
+                self._ohlcDataSeries.append(x: prices.dateData, open: prices.openData, high: prices.highData, low: prices.lowData, close: prices.closeData)
+                self._xyDataSeries.append(x: prices.dateData, y: self.getSmaCurrentValues(prices: prices))
+                
+                // TODO: update overview chart
+                
+            } else {
+                self.initDataWithService(prices: prices)
+                self.createMainPriceChart()
+                
+                let leftAreaAnnotation = SCIBoxAnnotation()
+                let rightAreaAnnotation = SCIBoxAnnotation()
+                self.createOverviewChartWith(leftAreaAnnotation, rightAreaAnnotation: rightAreaAnnotation)
+                
+                let axis = self.mainSurface.xAxes[0]
+                axis.visibleRangeChangeListener = { (axis, oldRange, newRange, isAnimating) in
+                    leftAreaAnnotation.set(x1: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
+                    leftAreaAnnotation.set(x2: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
+                    rightAreaAnnotation.set(x1: self.mainSurface.xAxes[0].visibleRange.minAsDouble)
+                    rightAreaAnnotation.set(x2: self.overviewSurface.xAxes[0].visibleRange.minAsDouble)
+                }
+                
+                self.initHorizontalLines(prices: prices)
+                
+                self.mainSurface.annotations.add(items: self.barrierLine!)
+                self.mainSurface.annotations.add(items: self._smaAxisMarker!)
+                self.mainSurface.annotations.add(items: self._ohlcAxisMarker!)
+                
+                self.alreadyLoaded = true
             }
-            
-            let horizontalLine1 = SCIHorizontalLineAnnotation()
-            horizontalLine1.set(x1: 0)
-            horizontalLine1.set(y1: prices.closeData.getValueAt(0))
-            horizontalLine1.isEditable = true
-            horizontalLine1.horizontalAlignment = .right
-            horizontalLine1.stroke = SCISolidPenStyle(color: UIColor.red, thickness: 2)
-            horizontalLine1.annotationLabels.add(createLabelWith(text: nil, labelPlacement: .axis))
-            
-            mainSurface.annotations.add(items: horizontalLine1)
-            
-            alreadyLoaded = true
         }
+    }
+    
+    private func initHorizontalLines(prices: SCDPriceSeries) {
+        let lastPrice = prices.lastObject()
+        let lastPriceIndex = _getDateIndex(lastPrice.date)
+        
+        barrierLine = SCIHorizontalLineAnnotation()
+        barrierLine?.set(x1: 0)
+        barrierLine?.set(y1: lastPrice.close.doubleValue + barrier)
+        barrierLine?.isEditable = true
+        barrierLine?.horizontalAlignment = .right
+        barrierLine?.stroke = SCISolidPenStyle(color: UIColor.red, thickness: 1)
+        barrierLine?.annotationLabels.add(self.createLabelWith(text: nil, labelPlacement: .axis))
+        
+        _smaAxisMarker = SCIHorizontalLineAnnotation()
+        _smaAxisMarker?.set(y1: lastPrice.close.doubleValue)
+        _smaAxisMarker?.isEditable = true
+        _smaAxisMarker?.horizontalAlignment = .right
+        _smaAxisMarker?.stroke = SCISolidPenStyle(color: UIColor.yellow, thickness: 1)
+        _smaAxisMarker?.annotationLabels.add(self.createLabelWith(text: nil, labelPlacement: .axis))
+        
+        _ohlcAxisMarker = SCIHorizontalLineAnnotation()
+        _ohlcAxisMarker?.set(x1: lastPriceIndex)
+        _ohlcAxisMarker?.set(y1: lastPrice.close.doubleValue)
+        _ohlcAxisMarker?.isEditable = true
+        _ohlcAxisMarker?.horizontalAlignment = .right
+        _ohlcAxisMarker?.stroke = SCISolidPenStyle(color: UIColor.white, thickness: 1)
+        _ohlcAxisMarker?.annotationLabels.add(self.createLabelWith(text: nil, labelPlacement: .axis))
+        
     }
     
     func initSurface(_ surface: SCIChartSurface, model: BasePaneModel, isMainPane: Bool) {
@@ -164,12 +191,6 @@ class RealtimeTickingStockChartView {
         ma50Series.dataSeries = _xyDataSeries
         ma50Series.strokeStyle = SCISolidPenStyle(colorCode: 0xFFFF6600, thickness: 1)
         
-        _smaAxisMarker.set(y1: 0)
-        _smaAxisMarker.backgroundBrush = SCISolidBrushStyle(colorCode: SmaSeriesColor)
-        
-        _ohlcAxisMarker.set(y1: 0)
-        _ohlcAxisMarker.backgroundBrush = SCISolidBrushStyle(colorCode: StrokeUpColor)
-        
         let xAxisDragModifier = SCIXAxisDragModifier()
         xAxisDragModifier.dragMode = .pan
         xAxisDragModifier.clipModeX = .stretchAtExtents
@@ -187,7 +208,6 @@ class RealtimeTickingStockChartView {
             self.mainSurface.yAxes.add(yAxis)
             self.mainSurface.renderableSeries.add(ma50Series)
             self.mainSurface.renderableSeries.add(ohlcSeries)
-            self.mainSurface.annotations.add(items: self._smaAxisMarker, self._ohlcAxisMarker)
             //self.mainSurface.chartModifiers.add(items: SCIXAxisDragModifier(), zoomPanModifier, SCIZoomExtentsModifier(), legendModifier)
             self.mainSurface.chartModifiers.add(items: xAxisDragModifier, pinchZoomModifier, SCIZoomPanModifier(), SCIZoomExtentsModifier(), legendModifier, SCICursorModifier())
         }
@@ -224,46 +244,49 @@ class RealtimeTickingStockChartView {
     }
     
     fileprivate func addMarkerForDataPoint(_ price: SCDPriceBar) {
-        let calculator = xAxis!.currentCoordinateCalculator
-        let labelProvider = xAxis?.labelProvider as! ISCICategoryLabelProvider
-        let index = labelProvider.transformDataToIndex(price.date)
-        let x = calculator.getCoordinate(Double(index))
+        let index = _getDateIndex(price.date)
         
         let textAnnotation2 = SCITextAnnotation()
-        textAnnotation2.set(x1: x)
+        textAnnotation2.set(x1: index)
         textAnnotation2.set(y1: price.high.doubleValue)
         textAnnotation2.isEditable = true
-        textAnnotation2.text = "Marker"
+        textAnnotation2.text = "Marker: \(String(describing: price.high))"
         textAnnotation2.fontStyle = SCIFontStyle(fontSize: 20, andTextColor: .white)
     }
     
     func onNewPrice(_ price: SCDPriceBar) {
-        let smaLastValue: Double
-        if (_lastPrice!.date == price.date) {
-            _ohlcDataSeries.update(open: price.open.doubleValue, high: price.high.doubleValue, low: price.low.doubleValue, close: price.close.doubleValue, at: _ohlcDataSeries.count - 1)
-            
-            smaLastValue = _sma50.update(price.close.doubleValue).current()
-            _xyDataSeries.update(y: smaLastValue, at: _xyDataSeries.count - 1)
-        } else {
-            _ohlcDataSeries.append(x: price.date, open: price.open.doubleValue, high: price.high.doubleValue, low: price.low.doubleValue, close: price.close.doubleValue)
+        SCIUpdateSuspender.usingWith(mainSurface) {
+            let smaLastValue: Double
+            if (self._lastPrice!.date == price.date) {
+                self._ohlcDataSeries.update(open: price.open.doubleValue, high: price.high.doubleValue, low: price.low.doubleValue, close: price.close.doubleValue, at: self._ohlcDataSeries.count - 1)
+                
+                smaLastValue = self._sma50.update(price.close.doubleValue).current()
+                self._xyDataSeries.update(y: smaLastValue, at: self._xyDataSeries.count - 1)
+            } else {
+                self._ohlcDataSeries.append(x: price.date, open: price.open.doubleValue, high: price.high.doubleValue, low: price.low.doubleValue, close: price.close.doubleValue)
 
-            smaLastValue = _sma50.push(price.close.doubleValue).current()
-            _xyDataSeries.append(x: price.date, y: smaLastValue)
-            
-            let visibleRange = mainSurface.xAxes[0].visibleRange
-            if (visibleRange.maxAsDouble > Double(_ohlcDataSeries.count)) {
-                visibleRange.setDoubleMinTo(visibleRange.minAsDouble + 1, maxTo: visibleRange.maxAsDouble + 1)
+                smaLastValue = self._sma50.push(price.close.doubleValue).current()
+                self._xyDataSeries.append(x: price.date, y: smaLastValue)
+                
+                let visibleRange = self.mainSurface.xAxes[0].visibleRange
+                if (visibleRange.maxAsDouble > Double(self._ohlcDataSeries.count)) {
+                    visibleRange.setDoubleMinTo(visibleRange.minAsDouble + 1, maxTo: visibleRange.maxAsDouble + 1)
+                }
+                
+                self.addMarkerForDataPoint(price)
             }
             
-            addMarkerForDataPoint(price)
+            self.barrierLine?.set(x1: 0)
+            self.barrierLine?.set(y1: price.close.doubleValue + self.barrier)
+            
+            self._smaAxisMarker?.set(x1: self._getDateIndex(price.date))
+            self.barrierLine?.set(y1: smaLastValue)
+            
+            self._ohlcAxisMarker?.set(x1: self._getDateIndex(price.date))
+            self.barrierLine?.set(y1: price.close.doubleValue)
+            
+            self._lastPrice = price;
         }
-        
-        let color = price.close.compare(price.open) == .orderedDescending ? StrokeUpColor : StrokeDownColor
-        _ohlcAxisMarker.backgroundBrush = SCISolidBrushStyle(colorCode: color)
-        _ohlcAxisMarker.set(y1: price.close.doubleValue)
-        _smaAxisMarker.set(y1: smaLastValue)
-        
-        _lastPrice = price;
     }
     
     // To change chart type
@@ -286,13 +309,6 @@ class RealtimeTickingStockChartView {
             self.mainSurface.renderableSeries.add(rSeries)
         }
     }
-    
-//    override func willMove(toWindow newWindow: UIWindow?) {
-//        super.willMove(toWindow: newWindow);
-//        if newWindow == nil {
-//            _marketDataService.clearSubscriptions()
-//        }
-//    }
     
     private func addLayoutConstraints() -> Void {
         macdSurface.translatesAutoresizingMaskIntoConstraints = false
@@ -337,5 +353,10 @@ class RealtimeTickingStockChartView {
             let lastTickIndex = labelProvider.transformDataToIndex(lastPrice.date)
             xAxis?.animateVisibleRange(to: SCIIndexRange(min: Int32(max(lastTickIndex - 20 , 0)), max: Int32(lastTickIndex)), withDuration: 0.4)
         }
+    }
+    
+    private func _getDateIndex(_ date: Date) -> Int {
+        let labelProvider = xAxis?.labelProvider as! ISCICategoryLabelProvider
+        return labelProvider.transformDataToIndex(date)
     }
 }
