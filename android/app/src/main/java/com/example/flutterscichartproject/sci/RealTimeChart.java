@@ -1,6 +1,7 @@
 package com.example.flutterscichartproject.sci;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -19,7 +20,10 @@ import com.scichart.charting.modifiers.AxisDragModifierBase;
 import com.scichart.charting.numerics.labelProviders.ICategoryLabelProvider;
 import com.scichart.charting.visuals.SciChartSurface;
 import com.scichart.charting.visuals.annotations.AxisMarkerAnnotation;
+import com.scichart.charting.visuals.annotations.HorizontalLineAnnotation;
+import com.scichart.charting.visuals.annotations.IAnnotation;
 import com.scichart.charting.visuals.annotations.LabelPlacement;
+import com.scichart.charting.visuals.annotations.OnAnnotationDragListener;
 import com.scichart.charting.visuals.axes.AutoRange;
 import com.scichart.charting.visuals.axes.CategoryDateAxis;
 import com.scichart.charting.visuals.axes.NumericAxis;
@@ -50,8 +54,8 @@ public class RealTimeChart {
     private IOhlcDataSeries<Date, Double> ohlcDataSeries;
     private IXyDataSeries<Date, Double> xyDataSeries;
 
-    private AxisMarkerAnnotation smaAxisMarker;
-    private AxisMarkerAnnotation ohlcAxisMarker;
+    private HorizontalLineAnnotation smaAxisMarker;
+    private HorizontalLineAnnotation ohlcAxisMarker;
 
     private CategoryDateAxis xAxis;
     private NumericAxis yAxis;
@@ -60,6 +64,10 @@ public class RealTimeChart {
     private PriceBar lastPrice;
 
     private OverviewPrototype overviewPrototype;
+
+    private HorizontalLineAnnotation barrierLine;
+
+    private double barrier = -0.1;
 
     private SciChartSurface surface;
     private SciChartSurface rsiSurface;
@@ -127,48 +135,90 @@ public class RealTimeChart {
 
         ohlcDataSeries = sciChartBuilder.newOhlcDataSeries(Date.class, Double.class).withSeriesName("Price Series").build();
         xyDataSeries = sciChartBuilder.newXyDataSeries(Date.class, Double.class).withSeriesName("50-Period SMA").build();
-
-        smaAxisMarker = sciChartBuilder.newAxisMarkerAnnotation().withY1(0d).withBackgroundColor(SMA_SERIES_COLOR).build();
-        ohlcAxisMarker = sciChartBuilder.newAxisMarkerAnnotation().withY1(0d).withBackgroundColor(STOKE_UP_COLOR).build();
     }
 
     public void startRealTimeChart(PriceSeries prices) {
-        if (alreadyLoaded) {
-            UpdateSuspender.using(surface, () -> {
+        UpdateSuspender.using(surface, () -> {
+            if (alreadyLoaded) {
                 xyDataSeries.clear();
                 ohlcDataSeries.clear();
 
                 rsiPaneModel.reloadData(prices);
                 macdPaneModel.reloadData(prices);
 
-                ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
-                xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
+                if (barrierLine != null) {
+                    barrierLine.setY1(getBarrierLineHeight(prices.get(prices.size() - 1)));
+                }
                 overviewPrototype.getOverviewDataSeries().clear();
-                overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
-            });
-        } else {
-            UpdateSuspender.using(surface, () -> {
+            } else {
                 rsiPaneModel = new RsiPaneModel(sciChartBuilder, prices);
                 macdPaneModel = new MacdPaneModel(sciChartBuilder, prices);
                 initChart(rsiSurface, rsiPaneModel);
                 initChart(macdSurface, macdPaneModel);
 
-                ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
-                xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
+                initHorizontalLines(prices);
 
-                overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
-
-                surface.getAnnotations().add(sciChartBuilder.newHorizontalLineAnnotation()
-                        .withPosition(0, prices.getCloseData().get(0))
-                        .withStroke(2, ColorUtil.Red)
-                        .withHorizontalGravity(Gravity.END)
-                        .withIsEditable(true)
-                        .withAnnotationLabel(LabelPlacement.Axis)
-                        .build());
+                surface.getAnnotations().add(barrierLine);
+                surface.getAnnotations().add(ohlcAxisMarker);
+                surface.getAnnotations().add(smaAxisMarker);
 
                 alreadyLoaded = true;
-            });
-        }
+            }
+
+            ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
+            xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
+            overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
+        });
+    }
+
+    private void initHorizontalLines(PriceSeries prices) {
+        ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider) xAxis.getLabelProvider();
+        int lastPriceIndex = categoryLabelProvider.transformDataToIndex(prices.getDateData().get(prices.size() - 1));
+
+        ohlcAxisMarker = sciChartBuilder.newHorizontalLineAnnotation()
+                .withPosition(lastPriceIndex, getBarrierLineHeight(prices.get(prices.size() - 1)))
+                .withStroke(0, ColorUtil.White)
+                .withHorizontalGravity(Gravity.END)
+                .withIsEditable(false)
+                .withAnnotationLabel(LabelPlacement.Axis)
+                .build();
+
+        smaAxisMarker = sciChartBuilder.newHorizontalLineAnnotation()
+                .withPosition(lastPriceIndex, getBarrierLineHeight(prices.get(prices.size() - 1)))
+                .withStroke(0, SMA_SERIES_COLOR)
+                .withHorizontalGravity(Gravity.END)
+                .withIsEditable(false)
+                .withAnnotationLabel(LabelPlacement.Axis)
+                .build();
+
+        barrierLine = sciChartBuilder.newHorizontalLineAnnotation()
+                .withPosition(0, getBarrierLineHeight(prices.get(prices.size() - 1)))
+                .withStroke(0, ColorUtil.Red)
+                .withHorizontalGravity(Gravity.END)
+                .withIsEditable(true)
+                .withAnnotationLabel(LabelPlacement.Axis)
+                .build();
+
+
+        barrierLine.setOnAnnotationDragListener(new OnAnnotationDragListener() {
+            @Override
+            public void onDragStarted(IAnnotation iAnnotation) {
+            }
+
+            @Override
+            public void onDragEnded(IAnnotation iAnnotation) {
+            }
+
+            @Override
+            public void onDragDelta(IAnnotation iAnnotation, float v, float v1) {
+                Log.i("DRAG", "" + v + " " + v1);
+                barrier += v1;
+            }
+        });
+    }
+
+    private double getBarrierLineHeight(PriceBar price) {
+        return price.getClose() + barrier;
     }
 
     private List<Double> getSmaCurrentValues(PriceSeries prices) {
@@ -209,7 +259,6 @@ public class RealTimeChart {
                 Collections.addAll(surface.getXAxes(), xAxis);
                 Collections.addAll(surface.getYAxes(), yAxis);
                 Collections.addAll(surface.getRenderableSeries(), line, chartSeries);
-                Collections.addAll(surface.getAnnotations(), smaAxisMarker, ohlcAxisMarker);
                 Collections.addAll(surface.getChartModifiers(), sciChartBuilder.newModifierGroup()
                         .withXAxisDragModifier().build()
                         .withZoomPanModifier().withReceiveHandledEvents(true).withXyDirection(Direction2D.XDirection).build()
@@ -228,54 +277,59 @@ public class RealTimeChart {
     }
 
     public void onNewPrice(PriceBar price) {
-        // Update the last price, or append?
-        double smaLastValue;
-        final IXyDataSeries<Date, Double> overviewDataSeries = overviewPrototype.getOverviewDataSeries();
+        UpdateSuspender.using(surface, new Runnable() {
+            @Override
+            public synchronized void run() {
+                // Update the last price, or append?
+                double smaLastValue;
+                final IXyDataSeries<Date, Double> overviewDataSeries = overviewPrototype.getOverviewDataSeries();
+                if (lastPrice != null && lastPrice.getDate().equals(price.getDate())) {
+                    ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
 
-        if (lastPrice != null && lastPrice.getDate().equals(price.getDate())) {
-            ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
+                    smaLastValue = sma50.update(price.getClose()).getCurrent();
+                    xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
 
-            smaLastValue = sma50.update(price.getClose()).getCurrent();
-            xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
+                    overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
+                } else {
+                    ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
 
-            overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
-        } else {
-            ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
+                    smaLastValue = sma50.push(price.getClose()).getCurrent();
+                    xyDataSeries.append(price.getDate(), smaLastValue);
 
-            smaLastValue = sma50.push(price.getClose()).getCurrent();
-            xyDataSeries.append(price.getDate(), smaLastValue);
+                    overviewDataSeries.append(price.getDate(), price.getClose());
 
-            overviewDataSeries.append(price.getDate(), price.getClose());
+                    // If the latest appending point is inside the viewport (i.e. not off the edge of the screen)
+                    // then scroll the viewport 1 bar, to keep the latest bar at the same place
+                    final IRange visibleRange = surface.getXAxes().get(0).getVisibleRange();
+                    if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
+                        visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
+                    }
 
-            // If the latest appending point is inside the viewport (i.e. not off the edge of the screen)
-            // then scroll the viewport 1 bar, to keep the latest bar at the same place
-            final IRange visibleRange = surface.getXAxes().get(0).getVisibleRange();
-            if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
-                visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
+                }
+
+                smaAxisMarker.setY1(smaLastValue);
+                smaAxisMarker.setX1(getDatesIndex(price.getDate()));
+
+                ohlcAxisMarker.setY1(price.getClose());
+                ohlcAxisMarker.setX1(getDatesIndex(price.getDate()));
+
+                barrierLine.setY1((price.getClose() + barrier));
+
+                lastPrice = price;
             }
+        });
+    }
 
-            addMarkerForDataPoint(price.getDate(), price.getHigh());
-
-        }
-        ohlcAxisMarker.setBackgroundColor(price.getClose() >= price.getOpen() ? STOKE_UP_COLOR : STROKE_DOWN_COLOR);
-
-        smaAxisMarker.setY1(smaLastValue);
-        ohlcAxisMarker.setY1(price.getClose());
-
-        lastPrice = price;
+    private int getDatesIndex(Date date) {
+        ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider) xAxis.getLabelProvider();
+        return categoryLabelProvider.transformDataToIndex(date);
     }
 
     private void addMarkerForDataPoint(Date date, double price) {
-        ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider)xAxis.getLabelProvider();
-        int index = categoryLabelProvider.transformDataToIndex(date);
-
-        float x = xAxis.getCoordinate(index);
-        float y = (float) price;
-
         surface.getAnnotations().add(sciChartBuilder.newTextAnnotation()
-                .withX1(x)
-                .withY1(y)
-                .withText("Marker x: "+ x + ", y: " + y)
+                .withX1(getDatesIndex(date))
+                .withY1(price)
+                .withText("Marker y: " + price)
                 .withFontStyle(20, ColorUtil.White)
                 .withZIndex(1) // draw this annotation above other annotations
                 .build());
@@ -345,7 +399,7 @@ public class RealTimeChart {
 
     public void scrollToCurrentTick() {
         if (lastPrice != null) {
-            ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider)xAxis.getLabelProvider();
+            ICategoryLabelProvider categoryLabelProvider = (ICategoryLabelProvider) xAxis.getLabelProvider();
             int lastTickIndex = categoryLabelProvider.transformDataToIndex(lastPrice.getDate());
             xAxis.animateVisibleRangeTo(new IndexRange(Math.max(lastTickIndex - 20, 0), lastTickIndex), 400);
         }

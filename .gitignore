@@ -12,6 +12,7 @@
 # License Keys
 ios/Runner/LicenseKey.swift
 android/app/src/main/java/com/example/flutterscichartproject/LicenseKey.java
+android/key.properties
 
 # IntelliJ related
 *.iml
