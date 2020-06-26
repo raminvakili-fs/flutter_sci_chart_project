@@ -1,9 +1,12 @@
 package com.example.flutterscichartproject.sci;
 
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 import com.example.flutterscichartproject.data.MovingAverage;
@@ -102,22 +105,22 @@ public class RealTimeChart {
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        params.weight = 0.55f;
+        params.weight = 0.7f;
         surface.setLayoutParams(params);
 
         LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        params2.weight = 0.15f;
+        params2.weight = 0.1f;
         overviewSurface.setLayoutParams(params2);
 
         LinearLayout.LayoutParams params3 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        params3.weight = 0.15f;
+        params3.weight = 0.1f;
         rsiSurface.setLayoutParams(params3);
 
         LinearLayout.LayoutParams params4 = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, 0);
-        params4.weight = 0.15f;
+        params4.weight = 0.1f;
         macdSurface.setLayoutParams(params4);
 
         chartLayout.addView(surface);
@@ -286,47 +289,50 @@ public class RealTimeChart {
     }
 
     public void onNewPrice(PriceBar price) {
-        UpdateSuspender.using(surface, new Runnable() {
-            @Override
-            public synchronized void run() {
-                // Update the last price, or append?
-                double smaLastValue;
-                final IXyDataSeries<Date, Double> overviewDataSeries = overviewPrototype.getOverviewDataSeries();
-                if (lastPrice != null && lastPrice.getDate().equals(price.getDate())) {
-                    ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
+        // Update the last price, or append?
+        double smaLastValue;
+        final IXyDataSeries<Date, Double> overviewDataSeries = overviewPrototype.getOverviewDataSeries();
+        if (lastPrice != null && lastPrice.getDate().equals(price.getDate())) {
+            smaLastValue = sma50.update(price.getClose()).getCurrent();
+            xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
 
-                    smaLastValue = sma50.update(price.getClose()).getCurrent();
-                    xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
+            ValueAnimator animator = new  ValueAnimator();
+            animator.setInterpolator(new DecelerateInterpolator());
+            animator.setObjectValues(ohlcDataSeries.getCloseValues().get(ohlcDataSeries.getCount() - 1), price.getClose()); //double value
+            animator.addUpdateListener(animation -> UpdateSuspender.using(surface, () -> {
+                ohlcAxisMarker.setY1((double)animation.getAnimatedValue());
+                barrierLine.setY1(((double)animation.getAnimatedValue() + barrier));
+                ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), (double)animation.getAnimatedValue());
+            }));
+            animator.setEvaluator((TypeEvaluator<Double>) (fraction, startValue, endValue) -> (startValue + ((endValue - startValue) * fraction)));
+            animator.setDuration(400);
+            animator.start();
 
-                    overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
-                } else {
-                    ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
+            overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
+        } else {
+            ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
 
-                    smaLastValue = sma50.push(price.getClose()).getCurrent();
-                    xyDataSeries.append(price.getDate(), smaLastValue);
+            smaLastValue = sma50.push(price.getClose()).getCurrent();
+            xyDataSeries.append(price.getDate(), smaLastValue);
 
-                    overviewDataSeries.append(price.getDate(), price.getClose());
+            overviewDataSeries.append(price.getDate(), price.getClose());
 
-                    // If the latest appending point is inside the viewport (i.e. not off the edge of the screen)
-                    // then scroll the viewport 1 bar, to keep the latest bar at the same place
-                    final IRange visibleRange = surface.getXAxes().get(0).getVisibleRange();
-                    if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
-                        visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
-                    }
-
-                }
-
-                smaAxisMarker.setY1(smaLastValue);
-                smaAxisMarker.setX1(getDatesIndex(price.getDate()));
-
-                ohlcAxisMarker.setY1(price.getClose());
-                ohlcAxisMarker.setX1(getDatesIndex(price.getDate()));
-
-                barrierLine.setY1((price.getClose() + barrier));
-
-                lastPrice = price;
+            ohlcAxisMarker.setY1(price.getClose());
+            ohlcAxisMarker.setX1(getDatesIndex(price.getDate()));
+            barrierLine.setY1((price.getClose() + barrier));
+            // If the latest appending point is inside the viewport (i.e. not off the edge of the screen)
+            // then scroll the viewport 1 bar, to keep the latest bar at the same place
+            final IRange visibleRange = surface.getXAxes().get(0).getVisibleRange();
+            if (visibleRange.getMaxAsDouble() > ohlcDataSeries.getCount()) {
+                visibleRange.setMinMaxDouble(visibleRange.getMinAsDouble() + 1, visibleRange.getMaxAsDouble() + 1);
             }
-        });
+
+        }
+
+        smaAxisMarker.setY1(smaLastValue);
+        smaAxisMarker.setX1(getDatesIndex(price.getDate()));
+
+        lastPrice = price;
     }
 
     private int getDatesIndex(Date date) {
