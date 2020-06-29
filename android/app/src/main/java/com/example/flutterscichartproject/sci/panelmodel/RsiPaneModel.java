@@ -7,6 +7,7 @@ import com.scichart.extensions.builders.SciChartBuilder;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class RsiPaneModel extends BasePaneModel {
     private static final String RSI = "RSI";
@@ -24,6 +25,11 @@ public class RsiPaneModel extends BasePaneModel {
     }
 
     public void reloadData(PriceSeries prices) {
+        rsiSeries.clear();
+        rsiSeries.append(prices.getDateData(), MovingAverage.rsi(prices, 14));
+    }
+
+    public void update(PriceSeries prices) {
         rsiSeries.clear();
         rsiSeries.append(prices.getDateData(), MovingAverage.rsi(prices, 14));
     }

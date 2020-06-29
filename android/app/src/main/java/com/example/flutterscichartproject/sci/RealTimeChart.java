@@ -149,7 +149,10 @@ public class RealTimeChart {
         xyDataSeries = sciChartBuilder.newXyDataSeries(Date.class, Double.class).withSeriesName("50-Period SMA").build();
     }
 
+    private PriceSeries prices;
+
     public void startRealTimeChart(PriceSeries prices) {
+        this.prices = prices;
         UpdateSuspender.using(surface, () -> {
             if (alreadyLoaded) {
                 xyDataSeries.clear();
@@ -310,6 +313,10 @@ public class RealTimeChart {
 
             overviewDataSeries.updateYAt(overviewDataSeries.getCount() - 1, price.getClose());
         } else {
+            prices.add(price);
+            macdPaneModel.update(prices);
+            rsiPaneModel.update(prices);
+
             ohlcDataSeries.append(price.getDate(), price.getOpen(), price.getHigh(), price.getLow(), price.getClose());
 
             smaLastValue = sma50.push(price.getClose()).getCurrent();

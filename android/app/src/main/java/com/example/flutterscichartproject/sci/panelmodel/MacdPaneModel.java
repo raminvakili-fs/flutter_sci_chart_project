@@ -1,6 +1,7 @@
 package com.example.flutterscichartproject.sci.panelmodel;
 
 import com.example.flutterscichartproject.data.MovingAverage;
+import com.example.flutterscichartproject.data.PriceBar;
 import com.example.flutterscichartproject.data.PriceSeries;
 import com.scichart.charting.model.dataSeries.XyDataSeries;
 import com.scichart.charting.model.dataSeries.XyyDataSeries;
@@ -38,5 +39,14 @@ public class MacdPaneModel extends BasePaneModel {
 
         macdDataSeries.clear();
         macdDataSeries.append(prices.getDateData(), macdPoints.macdValues, macdPoints.signalValues);
+    }
+
+    public void update(PriceSeries prices) {
+        macdDataSeries.clear();
+        histogramDataSeries.clear();
+        final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 7, 20, 4);
+        macdDataSeries.append(prices.getDateData(), macdPoints.macdValues, macdPoints.signalValues);
+        histogramDataSeries.append(prices.getDateData(), macdPoints.divergenceValues);
+
     }
 }
