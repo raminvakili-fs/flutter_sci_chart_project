@@ -136,6 +136,24 @@ class _CandleChartPageState extends State<CandleChartPage> {
                   .toList();
             },
           ),
+          PopupMenuButton<String>(
+            child: Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(12),
+              child: Icon(Icons.multiline_chart),
+            ),
+            onSelected: (choice) {
+              _controller.onIndicator(choice);
+            },
+            itemBuilder: (BuildContext context) {
+              return {'MACD', 'RSI'}
+                  .map((String choice) => PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      ))
+                  .toList();
+            },
+          ),
         ],
       ),
       body: Stack(
@@ -182,5 +200,4 @@ class _CandleChartPageState extends State<CandleChartPage> {
       ),
     );
   }
-
 }

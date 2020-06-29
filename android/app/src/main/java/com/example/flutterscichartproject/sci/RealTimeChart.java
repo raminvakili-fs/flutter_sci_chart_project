@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -433,5 +434,18 @@ public class RealTimeChart {
 
     public void addMarker() {
         addMarkerForDataPoint(lastPrice.getDate(), lastPrice.getHigh());
+    }
+
+    public void onIndicator(String indicator) {
+        switch (indicator) {
+            case "MACD":
+                macdSurface.setVisibility(macdSurface.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                break;
+            case "RSI":
+                rsiSurface.setVisibility(rsiSurface.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+                break;
+            default:
+                Log.d("TAG", "Not supported");
+        }
     }
 }

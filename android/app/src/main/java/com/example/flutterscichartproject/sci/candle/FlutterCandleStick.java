@@ -52,6 +52,9 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
             case "addMarker":
                 realTimeChart.addMarker();
                 break;
+            case "onIndicator":
+                onIndicator(methodCall, result);
+                break;
             default:
                 result.notImplemented();
         }
@@ -84,6 +87,12 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
         PriceBar newOHLC = new PriceBar(new Date((long) argMap.get("open_time")), (double) argMap.get("open"),
                 (double) argMap.get("high"), (double) argMap.get("low"), (double) argMap.get("close"), 0L);
         realTimeChart.onNewPrice(newOHLC);
+        result.success(null);
+    }
+
+    private void onIndicator(MethodCall methodCall, Result result) {
+        String indicator = (String) methodCall.arguments;
+        realTimeChart.onIndicator(indicator);
         result.success(null);
     }
 

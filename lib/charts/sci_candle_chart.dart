@@ -57,9 +57,8 @@ class CandleChartController {
 
   MethodChannel _channel;
 
-  Future<void> changeChartType(String type) async {
-    return _channel.invokeMethod('changeChartType', type);
-  }
+  Future<void> changeChartType(String type) async =>
+      _channel.invokeMethod('changeChartType', type);
 
   Future<void> loadHistoryCandles(List<dynamic> candles) async {
     return _channel.invokeMethod('loadHistoryCandles', {
@@ -117,6 +116,8 @@ class CandleChartController {
   Future<void> scrollToCurrentTick() =>
       _channel.invokeMethod('scrollToCurrentTick');
 
-  Future<void> addMarker() =>
-      _channel.invokeMethod('addMarker');
+  Future<void> addMarker() => _channel.invokeMethod('addMarker');
+
+  Future<void> onIndicator(String indicator) =>
+      _channel.invokeMethod('onIndicator', indicator);
 }
