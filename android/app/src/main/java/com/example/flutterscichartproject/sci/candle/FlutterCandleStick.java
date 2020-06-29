@@ -49,6 +49,9 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
             case "scrollToCurrentTick":
                 realTimeChart.scrollToCurrentTick();
                 break;
+            case "addMarker":
+                realTimeChart.addMarker();
+                break;
             default:
                 result.notImplemented();
         }

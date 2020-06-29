@@ -7,14 +7,17 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.flutterscichartproject.R;
 import com.example.flutterscichartproject.data.MovingAverage;
 import com.example.flutterscichartproject.data.PriceBar;
 import com.example.flutterscichartproject.data.PriceSeries;
 import com.example.flutterscichartproject.sci.panelmodel.BasePaneModel;
 import com.example.flutterscichartproject.sci.panelmodel.MacdPaneModel;
 import com.example.flutterscichartproject.sci.panelmodel.RsiPaneModel;
+import com.example.flutterscichartproject.sci.views.Marker;
 import com.scichart.charting.ClipMode;
 import com.scichart.charting.Direction2D;
 import com.scichart.charting.model.dataSeries.IOhlcDataSeries;
@@ -23,6 +26,7 @@ import com.scichart.charting.modifiers.AxisDragModifierBase;
 import com.scichart.charting.numerics.labelProviders.ICategoryLabelProvider;
 import com.scichart.charting.visuals.SciChartSurface;
 import com.scichart.charting.visuals.annotations.AxisMarkerAnnotation;
+import com.scichart.charting.visuals.annotations.CustomAnnotation;
 import com.scichart.charting.visuals.annotations.HorizontalLineAnnotation;
 import com.scichart.charting.visuals.annotations.IAnnotation;
 import com.scichart.charting.visuals.annotations.LabelPlacement;
@@ -49,6 +53,7 @@ import java.util.Random;
 public class RealTimeChart {
 
     private Random random = new Random();
+    private Context mContext;
 
     private final SciChartBuilder sciChartBuilder;
     static final int SECONDS_IN_FIVE_MINUTES = 5 * 60;
@@ -91,6 +96,7 @@ public class RealTimeChart {
     private boolean alreadyLoaded = false;
 
     public RealTimeChart(Context context) {
+        mContext = context;
         SciChartBuilder.init(context);
         sciChartBuilder = SciChartBuilder.instance();
         initFields(context);
@@ -174,12 +180,6 @@ public class RealTimeChart {
             ohlcDataSeries.append(prices.getDateData(), prices.getOpenData(), prices.getHighData(), prices.getLowData(), prices.getCloseData());
             xyDataSeries.append(prices.getDateData(), getSmaCurrentValues(prices));
             overviewPrototype.getOverviewDataSeries().append(prices.getDateData(), prices.getCloseData());
-
-            for (PriceBar priceBar: prices) {
-                if (random.nextInt(100) > 97) {
-                    addMarkerForDataPoint(priceBar.getDate(), priceBar.getHigh());
-                }
-            }
         });
     }
 
@@ -296,13 +296,13 @@ public class RealTimeChart {
             smaLastValue = sma50.update(price.getClose()).getCurrent();
             xyDataSeries.updateYAt(xyDataSeries.getCount() - 1, smaLastValue);
 
-            ValueAnimator animator = new  ValueAnimator();
+            ValueAnimator animator = new ValueAnimator();
             animator.setInterpolator(new DecelerateInterpolator());
             animator.setObjectValues(ohlcDataSeries.getCloseValues().get(ohlcDataSeries.getCount() - 1), price.getClose()); //double value
             animator.addUpdateListener(animation -> UpdateSuspender.using(surface, () -> {
-                ohlcAxisMarker.setY1((double)animation.getAnimatedValue());
-                barrierLine.setY1(((double)animation.getAnimatedValue() + barrier));
-                ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), (double)animation.getAnimatedValue());
+                ohlcAxisMarker.setY1((double) animation.getAnimatedValue());
+                barrierLine.setY1(((double) animation.getAnimatedValue() + barrier));
+                ohlcDataSeries.update(ohlcDataSeries.getCount() - 1, price.getOpen(), price.getHigh(), price.getLow(), (double) animation.getAnimatedValue());
             }));
             animator.setEvaluator((TypeEvaluator<Double>) (fraction, startValue, endValue) -> (startValue + ((endValue - startValue) * fraction)));
             animator.setDuration(400);
@@ -340,14 +340,17 @@ public class RealTimeChart {
         return categoryLabelProvider.transformDataToIndex(date);
     }
 
-    private void addMarkerForDataPoint(Date date, double price) {
+    private void addMarkerForDataPoint(Date date, double value) {
         final int index = getDatesIndex(date);
-        surface.getAnnotations().add(sciChartBuilder.newTextAnnotation()
-                .withX1(index)
-                .withY1(price)
-                .withText("" + price)
-                .withFontStyle(10, ColorUtil.White)
-                .withZIndex(1) // draw this annotation above other annotations
+
+        Marker marker = new Marker(mContext);
+        marker.setText("" + value);
+
+        surface.getAnnotations().add(sciChartBuilder.newCustomAnnotation()
+                .withPosition(index, value + marker.getHeight())
+                .withContent(marker)
+                .withIsEditable(false)
+                .withZIndex(1)
                 .build());
     }
 
@@ -419,5 +422,9 @@ public class RealTimeChart {
             int lastTickIndex = categoryLabelProvider.transformDataToIndex(lastPrice.getDate());
             xAxis.animateVisibleRangeTo(new IndexRange(Math.max(lastTickIndex - 20, 0), lastTickIndex), 400);
         }
+    }
+
+    public void addMarker() {
+        addMarkerForDataPoint(lastPrice.getDate(), lastPrice.getHigh());
     }
 }

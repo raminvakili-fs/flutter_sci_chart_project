@@ -116,4 +116,7 @@ class CandleChartController {
 
   Future<void> scrollToCurrentTick() =>
       _channel.invokeMethod('scrollToCurrentTick');
+
+  Future<void> addMarker() =>
+      _channel.invokeMethod('addMarker');
 }

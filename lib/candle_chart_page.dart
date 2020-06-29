@@ -176,15 +176,11 @@ class _CandleChartPageState extends State<CandleChartPage> {
           )
         ],
       ),
-    );
-  }
-
-  Widget _buildOptionButton(String text) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(right: 4),
-        child: Text(text),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.outlined_flag),
+        onPressed: () => _controller.addMarker(),
       ),
     );
   }
+
 }
