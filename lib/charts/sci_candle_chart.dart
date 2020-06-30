@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 
 typedef void CandleChartCreatedCallback(CandleChartController controller);
 
-const String candleChartKey = 'SciCandleChart';
+const String sciChartKey = 'SciCandleChart';
 
-class SciCandleChart extends StatefulWidget {
-  const SciCandleChart({
+class SciChart extends StatefulWidget {
+  const SciChart({
     Key key,
     this.onChartCreated,
   }) : super(key: key);
@@ -15,10 +15,10 @@ class SciCandleChart extends StatefulWidget {
   final CandleChartCreatedCallback onChartCreated;
 
   @override
-  State<StatefulWidget> createState() => SciCandleChartState();
+  State<StatefulWidget> createState() => SciChartState();
 }
 
-class SciCandleChartState extends State<SciCandleChart> {
+class SciChartState extends State<SciChart> {
   @override
   void initState() {
     super.initState();
@@ -28,12 +28,12 @@ class SciCandleChartState extends State<SciCandleChart> {
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
-        viewType: candleChartKey,
+        viewType: sciChartKey,
         onPlatformViewCreated: _onPlatformViewCreated,
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
-        viewType: candleChartKey,
+        viewType: sciChartKey,
         onPlatformViewCreated: _onPlatformViewCreated,
       );
     }
@@ -52,7 +52,7 @@ class SciCandleChartState extends State<SciCandleChart> {
 
 class CandleChartController {
   CandleChartController(int id) {
-    this._channel = new MethodChannel('$candleChartKey$id');
+    this._channel = new MethodChannel('$sciChartKey$id');
   }
 
   MethodChannel _channel;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterscichartproject/candle_chart_page.dart';
+import 'package:flutterscichartproject/sci_chart_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -21,7 +21,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: CandleChartPage(),
+      home: SciChartPage(),
     );
   }
 }

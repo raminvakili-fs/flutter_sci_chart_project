@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutterscichartproject/api/deriv_connection_websocket.dart';
 import 'package:flutterscichartproject/charts/sci_candle_chart.dart';
 
-class CandleChartPage extends StatefulWidget {
+class SciChartPage extends StatefulWidget {
   @override
-  _CandleChartPageState createState() => _CandleChartPageState();
+  _SciChartPageState createState() => _SciChartPageState();
 }
 
-class _CandleChartPageState extends State<CandleChartPage> {
+class _SciChartPageState extends State<SciChartPage> {
   CandleChartController _controller;
   BinaryAPI _api;
   int _numOfTicks = 0;
@@ -164,7 +164,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
       ),
       body: Stack(
         children: <Widget>[
-          SciCandleChart(
+          SciChart(
             onChartCreated: (CandleChartController controller) =>
                 _controller = controller,
           ),
