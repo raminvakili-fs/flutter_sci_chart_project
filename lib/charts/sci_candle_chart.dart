@@ -120,4 +120,10 @@ class CandleChartController {
 
   Future<void> onIndicator(String indicator) =>
       _channel.invokeMethod('onIndicator', indicator);
+
+  Future<void> onReload() async {
+    await _channel.invokeMethod('onReload');
+    return true;
+  }
+
 }

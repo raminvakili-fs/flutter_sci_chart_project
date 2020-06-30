@@ -22,8 +22,10 @@ import static io.flutter.plugin.common.MethodChannel.Result;
 
 public class FlutterCandleStick implements PlatformView, MethodCallHandler {
     private RealTimeChart realTimeChart;
+    private Context mContext;
 
     FlutterCandleStick(Context context, BinaryMessenger messenger, int id) {
+        mContext = context;
         MethodChannel methodChannel = new MethodChannel(messenger, "SciCandleChart" + id);
         methodChannel.setMethodCallHandler(this);
         realTimeChart = new RealTimeChart(context);
@@ -54,6 +56,9 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
                 break;
             case "onIndicator":
                 onIndicator(methodCall, result);
+                break;
+            case "onReload":
+                onReload(methodCall, result);
                 break;
             default:
                 result.notImplemented();
@@ -93,6 +98,11 @@ public class FlutterCandleStick implements PlatformView, MethodCallHandler {
     private void onIndicator(MethodCall methodCall, Result result) {
         String indicator = (String) methodCall.arguments;
         realTimeChart.onIndicator(indicator);
+        result.success(null);
+    }
+
+    private void onReload(MethodCall methodCall, Result result) {
+        realTimeChart = new RealTimeChart(mContext);
         result.success(null);
     }
 

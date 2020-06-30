@@ -32,7 +32,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
     _subscribeTick();
   }
 
-  void _reloadChart() async {
+  void _reloadData() async {
     await _api.unsubscribeAll(_tickStyle, shouldForced: true);
     _tickStyle = _granularity == 1 ? 'ticks' : 'candles';
     _subscribeTick();
@@ -85,8 +85,14 @@ class _CandleChartPageState extends State<CandleChartPage> {
     setState(() {});
   }
 
+  Orientation _orientation;
+
   @override
   Widget build(BuildContext context) {
+    if (_orientation != MediaQuery.of(context).orientation) {
+      _reloadChart();
+    }
+    _orientation = MediaQuery.of(context).orientation;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -106,7 +112,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
             ),
             onSelected: (choice) {
               _granularity = choice;
-              _reloadChart();
+              _reloadData();
             },
             itemBuilder: (BuildContext context) {
               return {1, 60, 120, 180, 300, 600, 900, 3600}
@@ -125,7 +131,7 @@ class _CandleChartPageState extends State<CandleChartPage> {
             ),
             onSelected: (choice) {
               _historySize = choice;
-              _reloadChart();
+              _reloadData();
             },
             itemBuilder: (BuildContext context) {
               return {100, 200, 500, 1000, 2000, 5000}
@@ -199,5 +205,10 @@ class _CandleChartPageState extends State<CandleChartPage> {
         onPressed: () => _controller.addMarker(),
       ),
     );
+  }
+
+  void _reloadChart() async {
+    await _controller.onReload();
+    _reloadData();
   }
 }

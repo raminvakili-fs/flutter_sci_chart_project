@@ -433,7 +433,8 @@ public class RealTimeChart {
     }
 
     public void addMarker() {
-        addMarkerForDataPoint(lastPrice.getDate(), lastPrice.getHigh());
+        PriceBar secondLast = prices.get(prices.size() - 2);
+        addMarkerForDataPoint(secondLast.getDate(), secondLast.getHigh());
     }
 
     public void onIndicator(String indicator) {
