@@ -208,7 +208,7 @@ class _SciChartPageState extends State<SciChartPage> {
   }
 
   void _reloadChart() async {
-    await _controller.onReload();
+    await _controller?.onReload();
     _reloadData();
   }
 }
