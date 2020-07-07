@@ -25,8 +25,7 @@ public class RsiPaneModel extends BasePaneModel {
     }
 
     public void reloadData(PriceSeries prices) {
-        rsiSeries.clear();
-        rsiSeries.append(prices.getDateData(), MovingAverage.rsi(prices, 14));
+        update(prices);
     }
 
     public void update(PriceSeries prices) {

@@ -256,7 +256,7 @@ public class RealTimeChart {
                 .withDrawMinorGridLines(false)
                 .withGrowBy(0, 0.1)
                 .build();
-        yAxis = sciChartBuilder.newNumericAxis().withAutoRangeMode(AutoRange.Always).build();
+        yAxis = sciChartBuilder.newNumericAxis()/*.withAutoRangeMode(AutoRange.Always)*/.build();
 
         BaseRenderableSeries chartSeries = sciChartBuilder.newCandlestickSeries()
                 .withStrokeUp(0xFF00AA00)
@@ -341,6 +341,10 @@ public class RealTimeChart {
         smaAxisMarker.setX1(getDatesIndex(price.getDate()));
 
         lastPrice = price;
+
+        IRange yRange = surface.getYAxes().get(0).getVisibleRange();
+
+        yRange.setMinMaxDouble(Math.min(lastPrice.getClose() - 0.03, yRange.getMinAsDouble()), Math.max(lastPrice.getClose() + 0.03, yRange.getMaxAsDouble()));
     }
 
     private int getDatesIndex(Date date) {

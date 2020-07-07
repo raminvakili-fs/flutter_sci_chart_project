@@ -33,20 +33,16 @@ public class MacdPaneModel extends BasePaneModel {
     }
 
     public void reloadData(PriceSeries prices) {
-        histogramDataSeries.clear();
-        final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 7, 20, 4);
-        histogramDataSeries.append(prices.getDateData(), macdPoints.divergenceValues);
-
-        macdDataSeries.clear();
-        macdDataSeries.append(prices.getDateData(), macdPoints.macdValues, macdPoints.signalValues);
+        update(prices);
     }
 
     public void update(PriceSeries prices) {
-        macdDataSeries.clear();
         histogramDataSeries.clear();
         final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 7, 20, 4);
-        macdDataSeries.append(prices.getDateData(), macdPoints.macdValues, macdPoints.signalValues);
         histogramDataSeries.append(prices.getDateData(), macdPoints.divergenceValues);
+
+        macdDataSeries.clear();
+        macdDataSeries.append(prices.getDateData(), macdPoints.macdValues, macdPoints.signalValues);
 
     }
 }
