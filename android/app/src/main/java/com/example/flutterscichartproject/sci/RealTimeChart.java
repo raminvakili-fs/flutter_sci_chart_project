@@ -211,7 +211,7 @@ public class RealTimeChart {
                 .withPosition(0, getBarrierLineHeight(prices.get(prices.size() - 1)))
                 .withStroke(0, ColorUtil.Red)
                 .withHorizontalGravity(Gravity.END)
-                .withIsEditable(true)
+                .withIsEditable(false)
                 .withAnnotationLabel(LabelPlacement.Axis)
                 .build();
 
@@ -344,7 +344,8 @@ public class RealTimeChart {
 
         IRange yRange = surface.getYAxes().get(0).getVisibleRange();
 
-        yRange.setMinMaxDouble(Math.min(lastPrice.getClose() - 0.03, yRange.getMinAsDouble()), Math.max(lastPrice.getClose() + 0.03, yRange.getMaxAsDouble()));
+        yRange.setMinMaxDouble(Math.min(Math.min(Math.min(lastPrice.getClose(), smaLastValue), price.getClose() + barrier) - 0.04, yRange.getMinAsDouble()),
+                Math.max(Math.max(Math.max(lastPrice.getClose(), smaLastValue), price.getClose() + barrier) + 0.04, yRange.getMaxAsDouble()));
     }
 
     private int getDatesIndex(Date date) {

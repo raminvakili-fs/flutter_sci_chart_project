@@ -9,11 +9,13 @@ import com.scichart.extensions.builders.SciChartBuilder;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 public class MacdPaneModel extends BasePaneModel {
     private static final String MACD = "MACD";
     private XyDataSeries<Date, Double> histogramDataSeries;
     private XyyDataSeries<Date, Double> macdDataSeries;
+
     public MacdPaneModel(SciChartBuilder builder, PriceSeries prices) {
         super(builder, MACD, "0.00", false);
 
@@ -33,16 +35,28 @@ public class MacdPaneModel extends BasePaneModel {
     }
 
     public void reloadData(PriceSeries prices) {
-        update(prices);
-    }
-
-    public void update(PriceSeries prices) {
         histogramDataSeries.clear();
         final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 7, 20, 4);
         histogramDataSeries.append(prices.getDateData(), macdPoints.divergenceValues);
 
         macdDataSeries.clear();
         macdDataSeries.append(prices.getDateData(), macdPoints.macdValues, macdPoints.signalValues);
+    }
+
+    public void update(PriceSeries prices) {
+        final MovingAverage.MacdPoints macdPoints = MovingAverage.macd(prices.getCloseData(), 7, 20, 4);
+
+        final List<Double> updatedDivergence = macdPoints.divergenceValues;
+        final List<Double> updatedMacdValues = macdPoints.macdValues;
+        final List<Double> updatedSignalValues = macdPoints.signalValues;
+
+        final Date newDate = prices.getDateData().get(prices.getDateData().size() - 1);
+
+        histogramDataSeries.append(newDate,
+                updatedDivergence.get(updatedDivergence.size() - 1));
+
+        macdDataSeries.append(newDate, updatedMacdValues.get(updatedMacdValues.size() - 1),
+                updatedSignalValues.get(updatedSignalValues.size() - 1));
 
     }
 }
